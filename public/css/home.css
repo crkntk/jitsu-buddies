@@ -1,0 +1,14 @@
+body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  #map {
+    position: absolute;
+    height: 400px; 
+    width : 500px;
+    left: 200px;
+    top: 100px;
+    margin: 20px;
+    text-wrap: wrap;
+  }
