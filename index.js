@@ -3,6 +3,14 @@ import axios from 'axios'
 import bodyParser from 'body-parser'
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+dotenv.config();
+
+
+const key = process.env.PMAP_KEY ;
+
+
+
 const app = express();
 
 const port = 3000;
@@ -27,9 +35,11 @@ app.get('/', async (req, res) => {
         console.error("Error fetching location data:", err.message);
         return res.status(500).send("Error fetching location data.");
     }
+
     res.render('homepage.ejs',{
-        locationObj: location.data
-    });
+        locationObj: location.data,
+        papKey: key
+        });
 });
 
 app.listen(port, function() {
