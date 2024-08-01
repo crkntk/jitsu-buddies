@@ -11,4 +11,6 @@ body {
     top: 100px;
     margin: 20px;
     text-wrap: wrap;
+    z-index: 0;
+    margin: 10px;
   }
