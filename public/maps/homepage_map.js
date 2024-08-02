@@ -24,6 +24,24 @@ var myIcon = L.icon({
 });
 
 
-L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(map);
+var markerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(map);
+var popup = L.popup({
+  maxWidth: 200,
+  minWidth: 100,
+  autoClose: false,
+  closeButton: true,
+  className: 'popup',
+  closeOnClick: false,
+  autoPan: true
+})
+    .setLatLng([currUserLat, curUserLong])
+    .setContent('<p>Hello world!<br />This is a nice popup.</p>')
+    
+    popup.on("click", function (){
+
+        this.openOn(map);
+
+    });
+    markerIcon.bindPopup(popup);
 
 

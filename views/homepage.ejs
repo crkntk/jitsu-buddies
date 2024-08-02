@@ -12,10 +12,20 @@
 <body>
     <h1>Welcome to jitsu Buddies</h1>
     <h2>MAP</h2>
+    <!-- Checks if lat or long depending on wanting location based on ip address or adress on profile-->
+    <% if(locals.lat && locals.lon) {%>
+     <p id="latitude"><%= lat %></p>
+    <p id ="longitude"><%= lon %></p>
+     <% } else{ %>
     <p id="latitude"><%= locationObj.latitude %></p>
     <p id ="longitude"><%= locationObj.longitude %></p>
-    <div id="map">MAP CONTENT</div>
-    <p><%=JSON.stringify(locationObj)%></p>
+     <% } %>
+     <div class="map-flex-cont">
+          <div id="container-map">    
+               <div id="map"></div>
+          </div>
+     </div>
+    
 </body>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="

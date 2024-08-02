@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import convert from "xml-js";
 dotenv.config();
 const key = process.env.PMAP_KEY ;
 const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
@@ -16,9 +17,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static("public"));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
-
-
 app.get('/', async (req, res) => {
+
+    const currUserTest = TempUsers[1]; //  only for testing
+    console.log(currUserTest);
     // Fetch the user's IP address using the IPify API
     const ippAdd=  await axios.get(ipifyUrl);
     let location;
@@ -29,12 +31,27 @@ app.get('/', async (req, res) => {
     catch (err) {
         console.error("Error fetching location data:", err.message);
         return res.status(500).send("Error fetching location data.");
+    };
+    let LocIq_Loc;
+    const Addquery = locIQAPI+LokIQ+ "&q=" +currUserTest.address + "%2C%20" + currUserTest.city + "%2C%20" + currUserTest.state + "%2C%20" + currUserTest.zip + "%20&format=json";
+    //console.log(Addquery + "%20&format=json");
+    try{
+    LocIq_Loc = await axios.get(Addquery);
     }
-    const LocIq_Loc = await axios.get(locIQAPI+LokIQ+ "%q="
+    catch(err){
+        //console.log(err);
+        console.error("Error fetching location data from LokIQ:", err.message);
+        return res.status(500).send("Error fetching location data from LokIQ.");
+    }
+    console.log(LocIq_Loc);
+    var resultLocIQ = LocIq_Loc.data[0];
+    console.log(resultLocIQ.lat);
     //render webpage with the papimap key and the location data 
     res.render('homepage.ejs',{
         locationObj: location.data,
-        papKey: key
+        papKey: key,
+        lat: resultLocIQ.lat,
+        lon: resultLocIQ.lon
         });
 });
 
@@ -47,14 +64,14 @@ let User1 = {
     state: 'CA',
     zip: '92249',
     country: 'USA',
-    name: 'John Doe 1',
+    name: 'John Doe 1'
 }
 let User2 = {
-    address: '23 E. Correll Rd',
-    city: 'Heber',
+    address: '672 Las Villas Street',
+    city: 'Imperial',
     state: 'CA',
-    zip: '92249',
+    zip: '92251',
     country: 'USA',
-    name: 'John Doe 1',
+    name: 'John Doe 2'
 }
 const TempUsers = [User1, User2]
