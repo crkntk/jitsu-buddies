@@ -18,14 +18,12 @@ app.use(express.static("public"));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
 app.get('/', async (req, res) => {
-
     const currUserTest = TempUsers[1]; //  only for testing
     console.log(currUserTest);
     // Fetch the user's IP address using the IPify API
     const ippAdd=  await axios.get(ipifyUrl);
     let location;
     try {
-        //console.log(ippAdd);
      location = await axios.get(ipapiUrl + ippAdd.data.ip + "/json/");
     }
     catch (err) {
@@ -33,19 +31,17 @@ app.get('/', async (req, res) => {
         return res.status(500).send("Error fetching location data.");
     };
     let LocIq_Loc;
+    // construct the LokIQ API query URL with the user's address, city, state, and zip code
     const Addquery = locIQAPI+LokIQ+ "&q=" +currUserTest.address + "%2C%20" + currUserTest.city + "%2C%20" + currUserTest.state + "%2C%20" + currUserTest.zip + "%20&format=json";
-    //console.log(Addquery + "%20&format=json");
+    // Calling api to fetch location of latitude and longitude based on address we query locatoniq
     try{
     LocIq_Loc = await axios.get(Addquery);
     }
     catch(err){
-        //console.log(err);
         console.error("Error fetching location data from LokIQ:", err.message);
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
-    console.log(LocIq_Loc);
     var resultLocIQ = LocIq_Loc.data[0];
-    console.log(resultLocIQ.lat);
     //render webpage with the papimap key and the location data 
     res.render('homepage.ejs',{
         locationObj: location.data,
