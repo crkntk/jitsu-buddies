@@ -19,15 +19,15 @@ L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${key}
 
 
 var myIcon = L.icon({
-    iconUrl: '/images/ninja-svgrepo-com.svg',
-    iconSize: [20, 20],
+    iconUrl: '/images/belts/blue.png',
+    iconSize: [25, 25],
 });
 
 
-var markerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(map);
+var youMarkerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon,title:'YOU',alt:'YOUT'}).addTo(map);
 var popup = L.popup({
-  maxWidth: 200,
-  minWidth: 100,
+  maxWidth: 50,
+  minWidth: 25,
   autoClose: false,
   closeButton: true,
   className: 'popup',
@@ -35,13 +35,12 @@ var popup = L.popup({
   autoPan: true
 })
     .setLatLng([currUserLat, curUserLong])
-    .setContent('<p>Hello world!<br />This is a nice popup.</p>')
-    
+    .setContent('<p style="{text-align:center}">You<br /></p>')
     popup.on("click", function (){
 
         this.openOn(map);
 
     });
-    markerIcon.bindPopup(popup);
+    youMarkerIcon.bindPopup(popup).openPopup();
 
-
+export {map, youMarkerIcon};

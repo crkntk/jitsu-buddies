@@ -17,9 +17,23 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static("public"));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
+app.get('/searchPartners', (req, res) =>{
+    //this route searches for the top 10 partners based on algorithm
+    // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
+    // and return them in the response
 
+
+    let searchPartners = safe_Conversion(TempUsers.slice(1)); // TODO: This will be a call to database based on preferences and location remember to implement
+    //other prefrences filtering will happen before response
+
+    // TODO: Implement sorting based on algorithm
+    res.send(searchPartners);
+
+
+    
+})
 app.get('/home', async (req, res) => {
-    const currUserTest = TempUsers[1]; //  only for testing
+    const currUserTest = TempUsers[0]; //  only for testing
     console.log(currUserTest);
     // Fetch the user's IP address using the IPify API
     const ippAdd=  await axios.get(ipifyUrl);
@@ -59,6 +73,21 @@ app.get('/', async (req, res) => {
 app.listen(port, function() {
     console.log(`Server is running on port ${port}`);
 });
+
+function safe_Conversion(usersArray){
+    // TODO: implement safe conversion function for latitude and longitude
+    // takes in an array of users and converts to objects with safe data 
+    // returns an array of safe user objects
+    return usersArray.map(user => ({
+        lat: user.lat,
+        lon: user.lon,
+        experience: user.experience,
+        preferences: user.preferences,
+        name: user.name,
+        weight: user.weight
+    }));
+}
+
 let User1 = {
     address: '23 E. Correll Rd',
     city: 'Heber',
@@ -73,6 +102,168 @@ let User2 = {
     state: 'CA',
     zip: '92251',
     country: 'USA',
-    name: 'John Doe 2'
+    name: 'John Doe 2',
+    lat: 32.836110,
+    lon: -115.586950,
+    experience:
+    {
+        belt: "blue",
+        academy: "morales jujitsu",
+        years: 15,
+        certification: "World Jujitsu Champion",
+        otherGrappling:["wrestling", "judo"]
+    }
+    ,
+    preferences:
+    {
+        weightRange: [120,180],
+        grapplingStyles: ["judo", "wrestling",'jujitsu'],
+        ageRange: [25,35],
+        meetPrefrences: ['drill new moves', 'sparr'],
+        beltPrefrence:
+        {
+            white: true,
+            blue: true,
+            purple: true,
+            brown: true,
+            black: true
+        }
+        
+    }
+    ,
+    weight: 150
+    ,
+    availability: 
+    {
+        daysOfWeek:
+         {
+             Monday: true,
+             Tuesday: true,
+             Wednesday: true,
+             Thursday: true,
+             Friday: true,
+             Saturday: false,
+             Sunday: false
+         },
+        timesOfDay: 
+         {
+             morning: true,
+             afternoon: true,
+             evening: true
+         },
+        maxDistance: 10
+    }
 }
-const TempUsers = [User1, User2]
+let User3 = {
+    address: '2806 Parkway Street',
+    city: 'El Centro',
+    state: 'CA',
+    zip: '92243',
+    country: 'USA',
+    name: 'John Doe 2',
+    lat: 32.682480,
+    lon: -115.634949,
+    experience:
+    {
+        belt: "purple",
+        academy: "morales jujitsu",
+        years: 15,
+        certification: "World Jujitsu Champion",
+        otherGrappling:["wrestling", "judo"]
+    }
+    ,
+    preferences:
+    {
+        weightRange: [120,180],
+        grapplingStyles: ["judo", "wrestling",'jujitsu'],
+        ageRange: [25,35],
+        meetPrefrences: ['drill new moves', 'sparr'],
+        beltPrefrence:
+        {
+            white: true,
+            blue: true,
+            purple: true,
+            brown: true,
+            black: true
+        }
+        
+    },
+    weight: 150,
+    availability: 
+    {
+        daysOfWeek:
+         {
+             Monday: true,
+             Tuesday: true,
+             Wednesday: true,
+             Thursday: true,
+             Friday: true,
+             Saturday: false,
+             Sunday: false
+         },
+        timesOfDay: 
+         {
+             morning: true,
+             afternoon: true,
+             evening: true
+         },
+        maxDistance: 10
+    }
+}
+let User4 = {
+    address: '853 Parkway Street',
+    city: 'El Centro',
+    state: 'CA',
+    zip: '92243',
+    country: 'USA',
+    name: 'John Doe 2',
+    lat: 32.868767,
+    lon: -115.575333, 
+    experience:
+    {
+        belt: "black",
+        academy: "morales jujitsu",
+        years: 15,
+        certification: "World Jujitsu Champion",
+        otherGrappling:["wrestling", "judo"]
+    },
+    preferences:
+    {
+        weightRange: [120,180],
+        grapplingStyles: ["judo", "wrestling",'jujitsu'],
+        ageRange: [25,35],
+        meetPrefrences: ['drill new moves', 'sparr'],
+        beltPrefrence:
+        {
+            white: true,
+            blue: true,
+            purple: true,
+            brown: true,
+            black: true
+        }
+        
+    },
+    weight: 150,
+    availability: 
+    {
+        daysOfWeek:
+         {
+             Monday: true,
+             Tuesday: true,
+             Wednesday: true,
+             Thursday: true,
+             Friday: true,
+             Saturday: false,
+             Sunday: false
+         },
+        timesOfDay: 
+         {
+             morning: true,
+             afternoon: true,
+             evening: true
+         },
+        maxDistance: 10
+    }
+}
+const TempUsers = [User1, User2,User3, User4]
+
