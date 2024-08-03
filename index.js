@@ -17,7 +17,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static("public"));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
-app.get('/', async (req, res) => {
+
+app.get('/home', async (req, res) => {
     const currUserTest = TempUsers[1]; //  only for testing
     console.log(currUserTest);
     // Fetch the user's IP address using the IPify API
@@ -49,6 +50,10 @@ app.get('/', async (req, res) => {
         lat: resultLocIQ.lat,
         lon: resultLocIQ.lon
         });
+});
+
+app.get('/', async (req, res) => {
+    
 });
 
 app.listen(port, function() {
