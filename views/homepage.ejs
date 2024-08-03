@@ -20,12 +20,29 @@
     <p id="latitude"><%= locationObj.latitude %></p>
     <p id ="longitude"><%= locationObj.longitude %></p>
      <% } %>
+     <div id="flex-info">
+     <div id="info">
+          <div id="search-cont">
+               <div class="search-flex">
+                    <button id="search-button" class="search-item">Search For Partners</button>
+                    <button id="my-location" class="search-item">My Location</button>
+                    <button id="change-Availbility" class="search-item">Change Location</button>
+                    <button id="change-Availbility" class="search-item">Availability</button>
+                    <button id="change-Prefrences" class="search-item">Training Pref</button>
+               </div>
+          </div>
+     </div>
+</div>
      <div class="map-flex-cont">
           <div id="container-map">    
                <div id="map"></div>
           </div>
      </div>
+     
     
+
+     
+
 </body>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
