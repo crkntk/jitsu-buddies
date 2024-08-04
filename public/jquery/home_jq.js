@@ -37,6 +37,8 @@ function putIconsMap(user) {
     currUserLat = user.lat;
     curUserLong = user.lon;
     console.log(user);
+    const popContent = createPopupHTML(user);
+    console.log(popContent);
     let sizeOfIcon = [20, 20];
     if(user.experience.belt === "black"){
         sizeOfIcon = [25,25]
@@ -58,8 +60,7 @@ function putIconsMap(user) {
     autoPan: true
     })
         .setLatLng([currUserLat, curUserLong])
-        .setContent('<p>Hello world!<br />This is a nice popup.</p>')
-        
+        .setContent(popContent)
         popup.on("click", function (){
 
             this.openOn(map);
@@ -68,3 +69,15 @@ function putIconsMap(user) {
         markerIcon.bindPopup(popup);
 }
 
+function createPopupHTML(user) {
+    let grapplingStyles = "";
+    for (var i = 0; i <user.experience.otherGrappling.length; i++){
+        grapplingStyles = grapplingStyles + " " + user.experience.otherGrappling[i];
+    }
+    let meetPrefrences = "";
+    for (var i = 0; i <user.preferences.meetPrefrences.length; i++){
+        meetPrefrences = meetPrefrences + ", " + user.preferences.meetPrefrences[i];
+    }
+    return `<h2> Username: ${user.username} </h2><p> Academy: ${user.experience.academy}</p> <p> Belt: ${user.experience.belt}</p> <p>Weight: ${user.weight}</p> <p>Grappling Styles: ${grapplingStyles}</p> <p>Meeting Prefrences: ${meetPrefrences}</p> <button class='popUp-meet'>Set Meet</button> `;
+
+}

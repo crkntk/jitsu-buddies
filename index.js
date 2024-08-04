@@ -34,7 +34,6 @@ app.get('/searchPartners', (req, res) =>{
 })
 app.get('/home', async (req, res) => {
     const currUserTest = TempUsers[0]; //  only for testing
-    console.log(currUserTest);
     // Fetch the user's IP address using the IPify API
     const ippAdd=  await axios.get(ipifyUrl);
     let location;
@@ -84,7 +83,9 @@ function safe_Conversion(usersArray){
         experience: user.experience,
         preferences: user.preferences,
         name: user.name,
-        weight: user.weight
+        weight: user.weight,
+        username: user.username,
+        belt: user.belt
     }));
 }
 
@@ -94,7 +95,8 @@ let User1 = {
     state: 'CA',
     zip: '92249',
     country: 'USA',
-    name: 'John Doe 1'
+    name: 'John Doe 1',
+    username: 'CoolBelt'
 }
 let User2 = {
     address: '672 Las Villas Street',
@@ -105,6 +107,7 @@ let User2 = {
     name: 'John Doe 2',
     lat: 32.836110,
     lon: -115.586950,
+    username: 'CoolBelt2',
     experience:
     {
         belt: "blue",
@@ -163,6 +166,7 @@ let User3 = {
     name: 'John Doe 2',
     lat: 32.682480,
     lon: -115.634949,
+    username: 'CoolBelt3',
     experience:
     {
         belt: "purple",
@@ -218,7 +222,8 @@ let User4 = {
     country: 'USA',
     name: 'John Doe 2',
     lat: 32.868767,
-    lon: -115.575333, 
+    lon: -115.575333,
+    username: 'CoolBelt4',
     experience:
     {
         belt: "black",
