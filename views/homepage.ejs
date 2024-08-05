@@ -13,48 +13,60 @@
      <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 </head>
 <!-- color pallet https://colorhunt.co/palette/171717444444da0037ededed colors: black 171717, grey 444444, red DA0037, light grey EDEDED -->
 <body>
-    <h1>Welcome to jitsu Buddies</h1>
-    <h2>MAP</h2>
-    <!-- Checks if lat or long depending on wanting location based on ip address or adress on profile-->
-    <% if(locals.lat && locals.lon) {%>
-     <p id="latitude"><%= lat %></p>
-    <p id ="longitude"><%= lon %></p>
-     <% } else{ %>
-    <p id="latitude"><%= locationObj.latitude %></p>
-    <p id ="longitude"><%= locationObj.longitude %></p>
-     <% } %>
-     <div id="flex-info">
-     <div id="info">
-          <div id="search-cont">
-               <div class="search-flex">
-                    <button id="search-button" class="search-item main-font">Search For Partners</button>
-                    <button id="my-location" class="search-item main-font">My Location</button>
-                    <button id="change-location" class="search-item main-font">Change Location</button>
-                    <button id="change-availbility" class="search-item main-font">Availability</button>
-                    <button id="change-Prefrences" class="search-item main-font">Training Pref</button>
+     <div id="hidden-info">
+                    <h1>Welcome to jitsu Buddies</h1>
+                    <h2>MAP</h2>
+                    <!-- Checks if lat or long depending on wanting location based on ip address or adress on profile-->
+                    <% if(locals.lat && locals.lon) {%>
+                         <p id="latitude"><%= lat %></p>
+                    <p id ="longitude"><%= lon %></p>
+                         <% } else{ %>
+                    <p id="latitude"><%= locationObj.latitude %></p>
+                    <p id ="longitude"><%= locationObj.longitude %></p>
+                         <% } %>
+     </div>
+     <div class="header">
+          <%- include('partials/header.ejs') %>
+     </div>
+     <div id="nav-bar-cont">
+
+
+     </div>
+     <div class="grid-body">
+               <div id="search-map">
+               <div id="flex-info">
+                         <div id="info">
+                              <div id="search-cont">
+                                   <div class="search-flex">
+                                        <button id="search-button" class="search-item main-font">Search For Partners</button>
+                                        <button id="my-location" class="search-item main-font">My Location</button>
+                                        <button id="change-location" class="search-item main-font">Change Location</button>
+                                        <button id="change-availbility" class="search-item main-font">Availability</button>
+                                        <button id="change-Prefrences" class="search-item main-font">Training Pref</button>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               <div class="map-flex-cont">
+                    <div id="container-map">    
+                         <div id="map"></div>
+                    </div>
                </div>
           </div>
      </div>
-</div>
-     <div class="map-flex-cont">
-          <div id="container-map">    
-               <div id="map"></div>
-          </div>
-     </div>
-     
-    
-
-     
-
 </body>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin="">
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
      <script id="initmap-script" type="module" src="/maps/homepage_map.js" papKey=<%=papKey%>> </script>
      <script type="module" src="/jquery/home_jq.js"></script>
+
 </html>
