@@ -5,6 +5,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import convert from "xml-js";
+import sunTzu from "sun-tzu-quotes";
 dotenv.config();
 const key = process.env.PMAP_KEY ;
 const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
@@ -61,7 +62,8 @@ app.get('/home', async (req, res) => {
         locationObj: location.data,
         papKey: key,
         lat: resultLocIQ.lat,
-        lon: resultLocIQ.lon
+        lon: resultLocIQ.lon,
+        sunTzuQuote: get_sanTzuQuote()
         });
 });
 
@@ -87,6 +89,13 @@ function safe_Conversion(usersArray){
         username: user.username,
         belt: user.belt
     }));
+}
+function get_sanTzuQuote(){
+    let quote = sunTzu();
+    while(quote.length > 108){
+        quote = sunTzu();
+    }
+    return quote;
 }
 
 let User1 = {

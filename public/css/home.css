@@ -38,12 +38,12 @@ body {
   align-items: center;
   }
  #search-cont{
-   width: 488px;
-   height: 80px;
-   background-color: #EDEDED;
-   border-width: 1px;
+   width: 510px;
+   height: 200px;
+   background-color: #171717;
+   border-width: 5px;
    border-style: solid;
-   border-color: #DA0037;
+   border-color: #444444;
    padding: 10px;
    margin-bottom: 0px;
    margin-top: 50px;
@@ -57,12 +57,26 @@ body {
   align-items: center;
  }
  .search-item{
-   width: 100px;
-   height: 23px;
-   font-size: x-small;
-   background-color: #444444;
-   color: #EDEDED;
-   border-radius: 20px;
+    position: relative;
+    width: 100px;
+    height: 25px;
+    font-size: x-small;
+    background-color: #444444;
+    color: #EDEDED;
+    border-radius: 20px;
+    box-shadow: 0px 3px #c20131;
+ }
+ .search-item:hover{
+    background-color: #DA0037;
+    color: #EDEDED;
+    box-shadow: 0px 2px #c20131;
+    top: 2px;
+ }
+ .search-item:active{
+    background-color: #DA0037;
+    color: #EDEDED;
+    box-shadow: none;
+    top: 4px;
  }
  #my-location, 
  #search-button{
@@ -74,29 +88,38 @@ body {
   height: 0px;
  }
  .header{
-  grid-area: header;
- 
-  width: 100%;
-  height: 200px;
-  margin: 0px;
+      grid-area: header;
+      width: 100%;
+      height: 200px;
+      margin: 0px;
+      background-color:#EDEDED ;
+      display: flex;
+        justify-content: center;
  }
  #nav-bar-cont{
-  grid-area: sidebar;
-  background-color: black;
-  margin: 0px;
+      grid-area: sidebar;
+      background-color: black;
+      margin: 0px;
  }
  .grid-body{
   grid-area: content;
+  background-color:#EDEDED ;
  }
  body{
-  display: grid;
-    grid-gap: 5px;
-    grid-template-columns: 250px auto auto;
-    grid-template-areas:
-    "animation header header"
-    "sidebar content content"
-    "footer  footer  footer";
-    background-color: #fff;
-    color: #444;
+    display: grid;
+      grid-gap: 5px;
+      grid-template-columns: 250px auto auto;
+      grid-template-areas:
+      "animation header header"
+      "sidebar content content"
+      "footer  footer  footer";
+      background-color: #fff;
+      color: #444;
  }
 
+#search-bar-tit{
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'kanit';
+  color: white
+}

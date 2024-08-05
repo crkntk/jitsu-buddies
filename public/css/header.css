@@ -2,3 +2,19 @@ body{
     height: 200px;
     background-image: "../images/welcome.png";
 }
+.daily-tzu{
+    text-align: center;
+    font-family: 'kanit';
+    color: #171717;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px
+  }
+  .daily-tzu > p{
+    font-size: auto;
+    margin-bottom: 10px;
+  }
+  .daily-tzu > h2{
+    font-size: auto;
+    margin-bottom: 10px;
+  }
