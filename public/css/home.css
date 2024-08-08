@@ -96,11 +96,7 @@ body {
       display: flex;
         justify-content: center;
  }
- #nav-bar-cont{
-      grid-area: sidebar;
-      background-color: black;
-      margin: 0px;
- }
+
  .grid-body{
   grid-area: content;
   background-color:#EDEDED ;
@@ -122,4 +118,39 @@ body {
   margin-bottom: 30px;
   font-family: 'kanit';
   color: white
+}
+.custom-navbar{
+  background-color: #171717;
+}
+#nav-bar-cont{
+  grid-area: sidebar;
+  background-color: #EDEDED;
+  margin: 0px;
+  display: flex;
+  align-items: center;
+  row-gap: 0px;
+}
+.nav-item{
+  margin-right: 10px;
+  color: white;
+  text-decoration: none;
+}
+.close-arrow-cont{
+  justify-self: flex-end;
+  width: 10px;
+  height: 10px;
+}
+.close-arrow{
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+.nav-bar-btn{
+  background-color: #171717;
+  width: 200px;
+  height: 100%;
 }
