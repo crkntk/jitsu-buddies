@@ -51,7 +51,7 @@ body {
  .search-flex{
   display: flex;
   flex-wrap: wrap;
-  row-gap: 10px;
+  row-gap: 30px;
   column-gap: 20px;
   justify-content: center;
   align-items: center;
@@ -124,11 +124,12 @@ body {
 }
 #nav-bar-cont{
   grid-area: sidebar;
-  background-color: #EDEDED;
+  background-color: none;
   margin: 0px;
   display: flex;
   align-items: center;
   row-gap: 0px;
+  width: fit-content;
 }
 .nav-item{
   margin-right: 10px;
@@ -137,20 +138,42 @@ body {
 }
 .close-arrow-cont{
   justify-self: flex-end;
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 100%;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  padding: 0%;
+  margin: 0px;
+  
+  
 }
 .close-arrow{
+  margin: 0px;
+  padding: 0%;
   cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
   font-size: 20px;
   width: 20px;
-  height: 20px;
+  height: 50px;
+  background-color: #EDEDED;
+  color: #EDEDED;
+   
 }
 .nav-bar-btn{
   background-color: #171717;
   width: 200px;
   height: 100%;
+}
+#arrow-svg{
+  margin: 0px;
+  padding: 0px;
+  background-color: none;
+  border-radius: 30px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  cursor: pointer;
+  position: relative;
+  right: 10px;
+  color: #171717;
+  background-color: #EDEDED;
 }
