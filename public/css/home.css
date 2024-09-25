@@ -147,13 +147,13 @@ color: #DA0037;
   color: #d6355d;
 }
 .close-arrow-cont{
-  justify-self: flex-end;
+  justify-self: flex-start;
   width: 30px;
   height: 100%;
   display: flex;
   padding: 0%;
   margin: 0px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   border-radius: 15px;
 }
@@ -176,7 +176,8 @@ color: #DA0037;
   color: #EDEDED;
   border-width: 10px;
   border-color: #171717;
-   
+  position: relative;
+  top:0px
 }
 .nav-bar-opt{
   background-color: #171717;
@@ -208,8 +209,4 @@ color: #DA0037;
   width: 40px;
   height: 50px;
   border-radius: 20px;
-  rotate: 90deg;
-}
-#arrow-svg:focus{
-  rotate: 45deg;
 }

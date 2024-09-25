@@ -4,7 +4,7 @@ let currUserLat;
 let curUserLong;
 import {map,youMarkerIcon} from '../maps/homepage_map.js';
 
-
+$(".nav-bar-opt").toggle(0);
 $("#search-button").on("click", async function(){
     await $.ajax(
         {
@@ -27,6 +27,11 @@ $("#search-button").on("click", async function(){
 $("#my-location").on("click", function(){
     youMarkerIcon.openPopup();
 
+});
+$(".class-arrow").on("click", function(){
+    $(".nav-bar-opt").animate({
+        width:'toggle'
+    });
 });
 
 
