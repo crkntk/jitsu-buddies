@@ -32,7 +32,10 @@ app.get('/home', async(req, res) =>{
      papKey: key
      });
 });
-
+app.get('/sign', async (req, res) => {
+    console.log("Route was ran");
+    res.sendFile(__dirname + '/public/sign_up.html');
+ });
 app.get('/', async (req, res) => {
    res.sendFile(__dirname + '/public/sign_in.html');
 });
