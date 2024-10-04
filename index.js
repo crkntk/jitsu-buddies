@@ -4,6 +4,15 @@ import bodyParser from 'body-parser'
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import pg  from "pg";
+const db = new pg.Client({
+    username: "jitsu_adm",
+    host: 'localhost',
+    database: "jitsu_buddies",
+    password: "c122245$",
+    port: 5432,
+});
+// Load environment variables from.env file
 dotenv.config();
 const key = process.env.PMAP_KEY ;
 const app = express();
@@ -38,6 +47,12 @@ app.get('/sign', async (req, res) => {
  });
 app.get('/', async (req, res) => {
    res.sendFile(__dirname + '/public/sign_in.html');
+});
+app.post('/createUser', async (req, res) => {
+   console.log(req.body);
+
+
+
 });
 
 app.listen(port, function() {

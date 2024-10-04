@@ -8,45 +8,45 @@
 </head>
 <body>
     <div class="col-lg-10 col-md-12 m-5 align-items-center">
-    <form>
+    <form method="post" action="/createUser">
         <!-- 2 column grid layout with text inputs for the first and last names -->
-        <div class="row mb-4">
+        <div class="row mb-4 personal">
           <div class="col">
             <div data-mdb-input-init class="form-outline">
-              <input type="text" id="form6Example1" class="form-control" />
+              <input type="text"  name="firstName" class="form-control" required />
               <label class="form-label" for="form6Example1">First name</label>
             </div>
           </div>
           <div class="col">
             <div data-mdb-input-init class="form-outline">
-              <input type="text" id="form6Example2" class="form-control" />
+              <input type="text"  name="LastName" class="form-control" required />
               <label class="form-label" for="form6Example2">Last name</label>
             </div>
           </div>
         </div>
       
         <!-- Text input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="text" id="form6Example3" class="form-control" />
-          <label class="form-label" for="form6Example3">Academy Name</label>
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+          <input type="text" name="academyName" class="form-control" />
+          <label class="form-label" for="form6Example3">Academy Name (optional)</label>
         </div>
       
         <!-- Text input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="text" id="form6Example4" class="form-control" />
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+          <input type="text" name="address" class="form-control" />
           <label class="form-label" for="form6Example4">Address</label>
         </div>
       
         <!-- Email input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="email" id="form6Example5" class="form-control" />
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+          <input type="email" name="email" class="form-control" />
           <label class="form-label" for="form6Example5">Email</label>
         </div>
       
 
-        <div data-mdb-input-init class="form-outline mb-4">
-            <select class="form-select form-select-sm" aria-label="Small select example">
-                <option selected>Choose Belt</option>
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+            <select class="form-select form-select-sm" aria-label="Small select example" name="belt">
+                <option selected>Choose Belt (optonal)</option>
                 <option value="white">White</option>
                 <option value="blue">Blue</option>
                 <option value="purple">Purple</option>
@@ -56,83 +56,112 @@
             <label class="form-label" for="form6Example5">Belt</label>
           </div>
         <!-- Phone input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form6Example5" class="form-control" />
-          <label class="form-label" for="form6Example5">Phone</label>
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+            <input type="email" name="phoneNumber" class="form-control" />
+          <label class="form-label" for="form6Example5">Phone (optional)</label>
         </div>
         <!-- wieght input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form6Example5" class="form-control" />
-          <label class="form-label" for="form6Example5">weight</label>
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+            <input type="email" name="weight" class="form-control" />
+          <label class="form-label" for="form6Example5">weight (optional)</label>
         </div>
       
         <!-- Message input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <textarea class="form-control" id="form6Example7" rows="4"></textarea>
+        <div data-mdb-input-init class="form-outline mb-4 personal">
+          <textarea class="form-control" name="description" rows="4"></textarea>
           <label class="form-label" for="form6Example7">Bio Description</label>
         </div>
       
        
         <!-- Add photo file -->
-        <div class="mb-3">
+        <div class="mb-3 personal">
             <label for="formFile" class="form-label">Choose Profile Photo</label>
-            <input class="form-control" type="file" id="formFile">
+            <input class="form-control" name="photo" type="file" id="formFile">
           </div>
           <!-- Training Prefrences -->
-          <div class="m-3">
+          <div class="m-3 training">
             <h3 class="mb-1 col-7">Training Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+            <input class="form-check-input" type="checkbox" name="PrefNewMoves" >
             <label class="form-check-label" for="inlineCheckbox1">Drill New Moves</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+            <input class="form-check-input" type="checkbox" name="PrefDrillSeq">
             <label class="form-check-label" for="inlineCheckbox2">Drill Sequences</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+            <input class="form-check-input" type="checkbox" name="PrefFlowRoll">
             <label class="form-check-label" for="inlineCheckbox2">Flow Roll</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+            <input class="form-check-input" type="checkbox" name="PrefSparr" value="option4">
             <label class="form-check-label" for="inlineCheckbox2">Sparr</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Drill Sequences</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+            <input class="form-check-input" type="checkbox" name="PrefJujCoffee">
             <label class="form-check-label" for="inlineCheckbox2">Jujitsu Coffee </label>
           </div>
-
         </div>
-        <div class="m-3">
+        <div class="m-3 training">
             <h3 class="mb-1 col-7">Intensity Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault1" value="low">
             <label class="form-check-label" for="flexRadioDefault1">
               low
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault2" value="medium">
             <label class="form-check-label" for="flexRadioDefault2">
               medium
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault2" value="high">
             <label class="form-check-label" for="flexRadioDefault2">
               high
             </label>
           </div>
         </div>
+        <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  NEXT
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="inputPassword6" class="col-form-label">Password</label>
+          </div>
+          <div class="col-auto">
+            <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+          </div>
+          <div class="col-auto">
+            <span id="passwordHelpInline" class="form-text">
+              Must be 8-20 characters long.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <!-- Submit button -->
-        <button data-mdb-ripple-init type="button" class="btn btn-primary btn-block mb-4">Create Account</button>
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
       </form>
       </div>
       
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="./jquery/sign-up.js"></script>
 </html>
