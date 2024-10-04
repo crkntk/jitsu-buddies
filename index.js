@@ -6,6 +6,16 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import convert from "xml-js";
 import sunTzu from "sun-tzu-quotes";
+import pg  from "pg";
+
+const db = new pg.Client({
+    username: "jitsu_adm",
+    host: 'localhost',
+    database: "jitsu_buddies",
+    password: "c122245$",
+    port: 5432,
+});
+// Load environment variables from.env file
 dotenv.config();
 const key = process.env.PMAP_KEY ;
 const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
@@ -32,7 +42,7 @@ app.get('/searchPartners', (req, res) =>{
 
 
     
-})
+});
 app.get('/home', async (req, res) => {
     const currUserTest = TempUsers[0]; //  only for testing
     // Fetch the user's IP address using the IPify API
@@ -64,6 +74,20 @@ app.get('/home', async (req, res) => {
         lon: resultLocIQ.lon,
         sunTzuQuote: get_sanTzuQuote()
         });
+    });
+app.get('/sign', async (req, res) => {
+    console.log("Route was ran");
+    res.sendFile(__dirname + '/public/sign_up.html');
+ });
+app.get('/', async (req, res) => {
+   res.sendFile(__dirname + '/public/sign_in.html');
+});
+app.post('/createUser', async (req, res) => {
+   console.log(req.body);
+   
+
+
+
 });
 
 app.get('/', async (req, res) => {
@@ -280,3 +304,18 @@ let User4 = {
 }
 const TempUsers = [User1, User2,User3, User4]
 
+function validateEmail(email){
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  };
+function parseNewUser(request){
+//parses request for database
+
+ return {
+     username: request.body.username,
+     password: request.body.password,
+     email: request.body.email,
+     //add other fields as needed
+ };
+};

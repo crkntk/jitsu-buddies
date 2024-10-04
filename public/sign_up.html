@@ -8,127 +8,217 @@
 </head>
 <body>
     <div class="col-lg-10 col-md-12 m-5 align-items-center">
-    <form>
+    <form method="post" action="/createUser">
         <!-- 2 column grid layout with text inputs for the first and last names -->
-        <div class="row mb-4">
+        <div class="row mb-4 personal">
           <div class="col">
-            <div data-mdb-input-init class="form-outline">
-              <input type="text" id="form6Example1" class="form-control" />
-              <label class="form-label" for="form6Example1">First name</label>
+            <div class="form-outline">
+              <input type="text" id="firstName" name="firstName" class="form-control" required />
+              <label class="form-label" for="firstName">First name</label>
             </div>
           </div>
           <div class="col">
-            <div data-mdb-input-init class="form-outline">
-              <input type="text" id="form6Example2" class="form-control" />
-              <label class="form-label" for="form6Example2">Last name</label>
+            <div class="form-outline">
+              <input type="text" id="LastName"  name="LastName" class="form-control" required />
+              <label class="form-label" for="LastName">Last name</label>
             </div>
           </div>
         </div>
       
         <!-- Text input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="text" id="form6Example3" class="form-control" />
-          <label class="form-label" for="form6Example3">Academy Name</label>
+        <div class="form-outline mb-4 personal">
+          <input type="text" id="academyName" name="academyName" class="form-control" />
+          <label class="form-label" for="academyName">Academy Name (optional)</label>
         </div>
       
         <!-- Text input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="text" id="form6Example4" class="form-control" />
-          <label class="form-label" for="form6Example4">Address</label>
+        <div class="form-outline mb-4 personal">
+          <input type="text" id="address" name="address" class="form-control" />
+          <label class="form-label" for="address">Address</label>
+        </div>
+         <!-- Text input -->
+        <div class="form-outline mb-4 personal">
+          <select id="state" name="state" class="form-control">
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <option value="CT">Connecticut</option>
+            <option value="DE">Delaware</option>
+            <option value="DC">District Of Columbia</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="HI">Hawaii</option>
+            <option value="ID">Idaho</option>
+            <option value="IL">Illinois</option>
+            <option value="IN">Indiana</option>
+            <option value="IA">Iowa</option>
+            <option value="KS">Kansas</option>
+            <option value="KY">Kentucky</option>
+            <option value="LA">Louisiana</option>
+            <option value="ME">Maine</option>
+            <option value="MD">Maryland</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MI">Michigan</option>
+            <option value="MN">Minnesota</option>
+            <option value="MS">Mississippi</option>
+            <option value="MO">Missouri</option>
+            <option value="MT">Montana</option>
+            <option value="NE">Nebraska</option>
+            <option value="NV">Nevada</option>
+            <option value="NH">New Hampshire</option>
+            <option value="NJ">New Jersey</option>
+            <option value="NM">New Mexico</option>
+            <option value="NY">New York</option>
+            <option value="NC">North Carolina</option>
+            <option value="ND">North Dakota</option>
+            <option value="OH">Ohio</option>
+            <option value="OK">Oklahoma</option>
+            <option value="OR">Oregon</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="RI">Rhode Island</option>
+            <option value="SC">South Carolina</option>
+            <option value="SD">South Dakota</option>
+            <option value="TN">Tennessee</option>
+            <option value="TX">Texas</option>
+            <option value="UT">Utah</option>
+            <option value="VT">Vermont</option>
+            <option value="VA">Virginia</option>
+            <option value="WA">Washington</option>
+            <option value="WV">West Virginia</option>
+            <option value="WI">Wisconsin</option>
+            <option value="WY">Wyoming</option>
+          </select required>
+          <label class="form-label" for="state"></label>
         </div>
       
         <!-- Email input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <input type="email" id="form6Example5" class="form-control" />
-          <label class="form-label" for="form6Example5">Email</label>
+        <div class="form-outline mb-4 personal">
+          <input type="email" id="email" name="email" class="form-control" />
+          <label class="form-label" for="email">Email</label>
         </div>
       
 
-        <div data-mdb-input-init class="form-outline mb-4">
-            <select class="form-select form-select-sm" aria-label="Small select example">
-                <option selected>Choose Belt</option>
+        <div class="form-outline mb-4 personal">
+            <select class="form-select form-select-sm" aria-label="Small select example" name="belt" id="belt">
+                <option selected>Choose Belt (optonal)</option>
                 <option value="white">White</option>
                 <option value="blue">Blue</option>
                 <option value="purple">Purple</option>
                 <option value="brown">Brown</option>
                 <option value="black">Black</option>
               </select>
-            <label class="form-label" for="form6Example5">Belt</label>
+            <label class="form-label" for="belt">Belt</label>
           </div>
         <!-- Phone input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form6Example5" class="form-control" />
-          <label class="form-label" for="form6Example5">Phone</label>
+        <div class="form-outline mb-4 personal">
+            <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" />
+          <label class="form-label" for="phoneNumber">Phone (optional)</label>
         </div>
         <!-- wieght input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form6Example5" class="form-control" />
-          <label class="form-label" for="form6Example5">weight</label>
+        <div class="form-outline mb-4 personal">
+            <input type="text" name="weight" class="form-control" id="weight" />
+          <label class="form-label" for="weight">weight (optional)</label>
         </div>
       
         <!-- Message input -->
-        <div data-mdb-input-init class="form-outline mb-4">
-          <textarea class="form-control" id="form6Example7" rows="4"></textarea>
-          <label class="form-label" for="form6Example7">Bio Description</label>
+        <div class="form-outline mb-4 personal">
+          <textarea class="form-control" name="description" rows="4" id="description"></textarea>
+          <label class="form-label" for="description">Bio Description</label>
         </div>
       
        
         <!-- Add photo file -->
-        <div class="mb-3">
+        <div class="mb-3 personal">
             <label for="formFile" class="form-label">Choose Profile Photo</label>
-            <input class="form-control" type="file" id="formFile">
+            <input class="form-control" name="photo" type="file" id="formFile">
           </div>
           <!-- Training Prefrences -->
-          <div class="m-3">
+          <div class="m-3 training">
             <h3 class="mb-1 col-7">Training Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-            <label class="form-check-label" for="inlineCheckbox1">Drill New Moves</label>
+            <input class="form-check-input" type="checkbox" name="PrefNewMoves" id ="prefNewMoves" id="PrefDrillSeq">
+            <label class="form-check-label" for="prefNewMoves">Drill New Moves</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Drill Sequences</label>
+            <input class="form-check-input" type="checkbox" name="PrefDrillSeq" id="PrefDrillSeq">
+            <label class="form-check-label" for="PrefDrillSeq">Drill Sequences</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Flow Roll</label>
+            <input class="form-check-input" type="checkbox" name="PrefFlowRoll" id="PrefFlowRoll">
+            <label class="form-check-label" for="PrefFlowRoll">Flow Roll</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Sparr</label>
+            <input class="form-check-input" type="checkbox" name="PrefSparr" value="option4" id="PrefSparr">
+            <label class="form-check-label" for="PrefSparr">Sparr</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-            <label class="form-check-label" for="inlineCheckbox2">Jujitsu Coffee </label>
+            <input class="form-check-input" type="checkbox" name="PrefJujCoffee" id="PrefJujCoffee">
+            <label class="form-check-label" for="PrefJujCoffee">Jujitsu Coffee </label>
           </div>
-
         </div>
-        <div class="m-3">
+        <div class="m-3 training">
             <h3 class="mb-1 col-7">Intensity Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault1" value="low">
             <label class="form-check-label" for="flexRadioDefault1">
               low
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault2" value="medium">
             <label class="form-check-label" for="flexRadioDefault2">
               medium
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-            <label class="form-check-label" for="flexRadioDefault2">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault3" value="high">
+            <label class="form-check-label" for="flexRadioDefault3">
               high
             </label>
           </div>
         </div>
+        <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  NEXT
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="inputPassword6" class="col-form-label">Password</label>
+          </div>
+          <div class="col-auto">
+            <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+          </div>
+          <div class="col-auto">
+            <span id="passwordHelpInline" class="form-text">
+              Must be 8-20 characters long.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <!-- Submit button -->
-        <button data-mdb-ripple-init type="button" class="btn btn-primary btn-block mb-4">Create Account</button>
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
       </form>
       </div>
       
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="./jquery/sign-up.js"></script>
 </html>
