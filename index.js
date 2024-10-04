@@ -58,3 +58,6 @@ app.post('/createUser', async (req, res) => {
 app.listen(port, function() {
     console.log(`Server is running on port ${port}`);
 });
+function parseNewUser(request){
+//parses request for database
+};
