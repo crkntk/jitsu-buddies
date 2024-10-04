@@ -5,6 +5,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import pg  from "pg";
+
 const db = new pg.Client({
     username: "jitsu_adm",
     host: 'localhost',
@@ -50,6 +51,7 @@ app.get('/', async (req, res) => {
 });
 app.post('/createUser', async (req, res) => {
    console.log(req.body);
+   
 
 
 
@@ -58,6 +60,18 @@ app.post('/createUser', async (req, res) => {
 app.listen(port, function() {
     console.log(`Server is running on port ${port}`);
 });
+function validateEmail(email){
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  };
 function parseNewUser(request){
 //parses request for database
+
+ return {
+     username: request.body.username,
+     password: request.body.password,
+     email: request.body.email,
+     //add other fields as needed
+ };
 };
