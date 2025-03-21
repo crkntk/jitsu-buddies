@@ -1,4 +1,4 @@
-#JITSU BUDDIES
+# JITSU BUDDIES
 This website is to give users the ability to find jujitsu partners in their current area based on their prefrences
 In the front end we use JQUERY and some ajax calls to the back end
 in the back end we use node.js and API calls to Location API service to get locations based on IP addresses. We can also find locations using only the address given by user.
