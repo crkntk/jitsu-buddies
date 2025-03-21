@@ -7,16 +7,15 @@ import dotenv from "dotenv";
 import convert from "xml-js";
 import sunTzu from "sun-tzu-quotes";
 import pg  from "pg";
-
-const db = new pg.Client({
-    username: "jitsu_adm",
-    host: 'localhost',
-    database: "jitsu_buddies",
-    password: "c122245$",
-    port: 5432,
-});
 // Load environment variables from.env file
 dotenv.config();
+const db = new pg.Client({
+    username: process.env.DATABASE_PASSWORD ,
+    host: 'localhost',
+    database: process.env.DATABASE_PASSWORD,
+    port: process.env.DATABASE_PORT,
+});
+
 const key = process.env.PMAP_KEY ;
 const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
 const app = express();
