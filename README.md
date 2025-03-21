@@ -11,6 +11,8 @@ click sign in in the home page without any input data.
 currently working on the sign up with preferences page as well
 We have some predefined data in index.js
 
+Currently working on implement SQL Database with MySQL
+
 Run application:
 npm install
 npm run index.js or nodemon index.js
