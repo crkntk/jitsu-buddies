@@ -1,0 +1,18 @@
+services:
+  api:
+    build:
+      context: .
+      target: dev               # uses the "dev" stage from your Dockerfile
+    container_name: express-api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      # helpful on Mac/WSL for reliable file watching:
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/app                  # mount your code
+      - /app/node_modules       # keep container's node_modules (don't overwrite with host)
+    # If you want to override the dev command, uncomment:
+    # command: npm run dev
