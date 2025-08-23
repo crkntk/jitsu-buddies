@@ -7,7 +7,9 @@ import dotenv from "dotenv";
 import convert from "xml-js";
 import sunTzu from "sun-tzu-quotes";
 import pg  from "pg";
-import json from "json";
+import bcrypt from "bcrypt";
+
+const salRounds = 15
 // Load environment variables from.env file
 dotenv.config();
 const db = new pg.Client({
@@ -77,7 +79,7 @@ app.get('/', async (req, res) => {
    res.sendFile(__dirname + '/public/sign_in.html');
 });
 app.post('/createUser', async (req, res) => {
-   console.log(req.body.data_dict.keys());
+    console.log(Object.keys(req.body));
     let user = req.body;
     let LocIq_Loc;
     // construct the LokIQ API query URL with the user's address, city, state, and zip code
@@ -92,10 +94,11 @@ app.post('/createUser', async (req, res) => {
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
     let nameKeyArr = Object.keys(user)
-    nameKeyArr.append("location")
-    
+    nameKeyArr.push("location")
+    const nameStrings = nameKeyArr.toString()
+    let numArr = range(1,nameKeyArr)
     //var resultLocIQ = LocIq_Loc.data[0];
-    const text = `INSERT INTO users() VALUES`
+    const text = `INSERT INTO users(first_name,last_name, user_name) VALUES()`
     var resultLocIQ = LocIq_Loc.data[0];
     console.log(resultLocIQ)
     return LocIq_Loc;
