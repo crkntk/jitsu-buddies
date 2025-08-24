@@ -16,12 +16,13 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 // Load environment variables from.env file
 dotenv.config();
 const db = new pg.Client({
-    username: process.env.DATABASE_PASSWORD ,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
     host: 'localhost',
-    database: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
     port: process.env.DATABASE_PORT,
 });
-
+await db.connect();
 const key = process.env.PMAP_KEY ;
 const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
 const app = express();
@@ -121,18 +122,18 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     //var resultLocIQ = LocIq_Loc.data[0];
     const text = `INSERT INTO users(
                 first_name, last_name, user_name, academy_name,
-                address, city, us_state, zipcode, email, belt, phone, weight, bio, photo,
+                address, city, us_state, zipcode, email, belt, phone, weight, bio, profile_picture,
                 training_preferences, intensity_preferences, pswd_hash, location) 
                 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`
-
+    user["password"] = pswdHash
     let values = Object.values(user);
-    values.push(pswdHash);
     var pointLoc = '(' + longitude+','+ latitude + ')';
     values.push(pointLoc);
+    console.log("RIGHT BEFORE DATABASE")
     try{
-    const res = await client.query(text, values)
-    console.log(res.rows[0])
-    return res.status(200).send("Error fetching location data from LokIQ.");
+        const res = await db.query(text, values)
+        console.log(res.rows[0])
+        return res.status(200).send("Error fetching location data from LokIQ.");
     }catch(err){
         console.log(err);
         return res.status(500).send("Error uploading to database.");
