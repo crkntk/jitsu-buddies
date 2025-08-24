@@ -82,8 +82,9 @@ app.get('/sign', async (req, res) => {
 app.get('/', async (req, res) => {
    res.sendFile(__dirname + '/public/sign_in.html');
 });
+
 app.post('/createUser',upload.single('photo'), async (req, res) => {
-    console.log(Object.keys(req.body));
+    //console.log(Object.keys(req.body));
     let photoBuf = null, photoMime = null;
     if (req.file) {
       // validate and optimize
@@ -122,18 +123,23 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     //var resultLocIQ = LocIq_Loc.data[0];
     const text = `INSERT INTO users(
                 first_name, last_name, user_name, academy_name,
-                address, city, us_state, zipcode, email, belt, phone, weight, bio, profile_picture,
-                training_preferences, intensity_preferences, pswd_hash, location) 
+                address, city, us_state, zipcode, email, academy_belt, phone, weight, bio,
+                training_preferences, intensity_preferences, pswd_hash,profile_picture, location) 
                 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`
     user["password"] = pswdHash
+    if (user["weight"] == ''){
+        user["weight"] = 0.0
+    }
+    
     let values = Object.values(user);
-    var pointLoc = '(' + longitude+','+ latitude + ')';
+    var pointLoc = `POINT(${longitude} ${latitude})`;;
     values.push(pointLoc);
     console.log("RIGHT BEFORE DATABASE")
     try{
-        const res = await db.query(text, values)
+        console.log(user);
+        const resDB = await db.query(text, values)
         console.log(res.rows[0])
-        return res.status(200).send("Error fetching location data from LokIQ.");
+        return res.status(200).send("Successfully added user");
     }catch(err){
         console.log(err);
         return res.status(500).send("Error uploading to database.");
