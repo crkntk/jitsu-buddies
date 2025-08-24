@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="col-lg-10 col-md-12 m-5 align-items-center">
-    <form method="post" action="/createUser">
+    <form method="post" action="/createUser" enctype="multipart/form-data">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <div class="row mb-4 personal">
           <div class="col">
@@ -156,23 +156,23 @@
           <div class="m-3 training">
             <h3 class="mb-1 col-7">Training Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="PrefNewMoves" id ="prefNewMoves" id="PrefDrillSeq">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id ="prefNewMoves" value="newMoves">
             <label class="form-check-label" for="prefNewMoves">Drill New Moves</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="PrefDrillSeq" id="PrefDrillSeq">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefDrillSeq" value="drillSeq">
             <label class="form-check-label" for="PrefDrillSeq">Drill Sequences</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="PrefFlowRoll" id="PrefFlowRoll">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefFlowRoll" value="flowRoll">
             <label class="form-check-label" for="PrefFlowRoll">Flow Roll</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="PrefSparr" value="option4" id="PrefSparr">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" value="sparr" id="PrefSparr">
             <label class="form-check-label" for="PrefSparr">Sparr</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="PrefJujCoffee" id="PrefJujCoffee">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefJujCoffee" value="jujCoffee">
             <label class="form-check-label" for="PrefJujCoffee">Jujitsu Coffee </label>
           </div>
         </div>

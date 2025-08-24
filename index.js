@@ -8,8 +8,11 @@ import convert from "xml-js";
 import sunTzu from "sun-tzu-quotes";
 import pg  from "pg";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import sharp from "sharp";
 
 const salRounds = 15
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 // Load environment variables from.env file
 dotenv.config();
 const db = new pg.Client({
@@ -78,8 +81,23 @@ app.get('/sign', async (req, res) => {
 app.get('/', async (req, res) => {
    res.sendFile(__dirname + '/public/sign_in.html');
 });
-app.post('/createUser', async (req, res) => {
+app.post('/createUser',upload.single('photo'), async (req, res) => {
     console.log(Object.keys(req.body));
+    let photoBuf = null, photoMime = null;
+    if (req.file) {
+      // validate and optimize
+      const allowed = new Set(['image/jpeg','image/png','image/webp']);
+      if (!allowed.has(req.file.mimetype)) throw new Error('Unsupported image type');
+
+      photoBuf = await sharp(req.file.buffer)
+        .rotate()
+        .resize({ width: 1024, withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+      photoMime = 'image/webp';
+    }
+
+
     let user = req.body;
     let LocIq_Loc;
     // construct the LokIQ API query URL with the user's address, city, state, and zip code
@@ -97,8 +115,16 @@ app.post('/createUser', async (req, res) => {
     nameKeyArr.push("location")
     const nameStrings = nameKeyArr.toString()
     let numArr = range(1,nameKeyArr)
+    pswdHash = await bcrypt.hash(myPlaintextPassword, saltRounds);
     //var resultLocIQ = LocIq_Loc.data[0];
-    const text = `INSERT INTO users(first_name,last_name, user_name) VALUES()`
+    const text = `INSERT INTO users(
+                first_name, last_name, user_name, academy_name,
+                address, city, us_state, zipcode, email, belt, phone, weight, bio, photo,
+                training_preferences, intensity_preferences, pswd_hash, location) 
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`
+
+    let values = user;
+    values.push(pswdHash);
     var resultLocIQ = LocIq_Loc.data[0];
     console.log(resultLocIQ)
     return LocIq_Loc;
