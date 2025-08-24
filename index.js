@@ -49,24 +49,12 @@ app.get('/searchPartners', (req, res) =>{
 
     
 });
-app.get('/home', async (req, res) => {
-    const currUserTest = TempUsers[0]; //  only for testing
-    // Fetch the user's IP address using the IPify API
-    const ippAdd=  await axios.get(ipifyUrl);
-    let location;
-    
-    let LocIq_Loc;
-    // construct the LokIQ API query URL with the user's address, city, state, and zip code
-    const Addquery = locIQAPI+LokIQ+ "&q=" +currUserTest.address + "%2C%20" + currUserTest.city + "%2C%20" + currUserTest.state + "%2C%20" + currUserTest.zip + "%20&format=json";
-    // Calling api to fetch location of latitude and longitude based on address we query locatoniq
-    try{
-    LocIq_Loc = await axios.get(Addquery);
-    }
-    catch(err){
-        console.error("Error fetching location data from LokIQ:", err.message);
-        return res.status(500).send("Error fetching location data from LokIQ.");
-    }
-    var resultLocIQ = LocIq_Loc.data[0];
+app.get('/users/:username/home', async (req, res) => {
+   
+    const text = 'SELECT * FROM users WHERE username = $1'
+    const values = [req.params.username]
+    const selectedUser = db.query(text, values)
+    console.log(selectedUser);
     //render webpage with the papimap key and the location data 
     res.render('homepage.ejs',{
         papKey: key,
@@ -75,6 +63,8 @@ app.get('/home', async (req, res) => {
         sunTzuQuote: get_sanTzuQuote()
         });
     });
+
+
 app.get('/sign', async (req, res) => {
     console.log("Route was ran");
     res.sendFile(__dirname + '/public/sign_up.html');
@@ -138,8 +128,8 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     try{
         console.log(user);
         const resDB = await db.query(text, values)
-        console.log(res.rows[0])
-        return res.status(200).send("Successfully added user");
+        //console.log(res.rows[0])
+        return res.redirect(`../users/${user.username}/home`);
     }catch(err){
         console.log(err);
         return res.status(500).send("Error uploading to database.");
