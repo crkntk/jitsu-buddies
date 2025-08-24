@@ -11,7 +11,7 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import sharp from "sharp";
 
-const salRounds = 15
+const saltRounds = 15
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 // Load environment variables from.env file
 dotenv.config();
@@ -99,6 +99,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 
 
     let user = req.body;
+    user["photo"] = photoBuf;
     let LocIq_Loc;
     // construct the LokIQ API query URL with the user's address, city, state, and zip code
     
@@ -111,11 +112,12 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         console.error("Error fetching location data from LokIQ:", err.message);
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
-    let nameKeyArr = Object.keys(user)
-    nameKeyArr.push("location")
-    const nameStrings = nameKeyArr.toString()
-    let numArr = range(1,nameKeyArr)
-    pswdHash = await bcrypt.hash(myPlaintextPassword, saltRounds);
+    var resultLocIQ = LocIq_Loc.data[0];
+    let latitude = resultLocIQ.lat;
+    let longitude = resultLocIQ.lon;
+    
+    
+    let pswdHash = await bcrypt.hash(user.password, saltRounds);
     //var resultLocIQ = LocIq_Loc.data[0];
     const text = `INSERT INTO users(
                 first_name, last_name, user_name, academy_name,
@@ -125,9 +127,16 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 
     let values = user;
     values.push(pswdHash);
-    var resultLocIQ = LocIq_Loc.data[0];
-    console.log(resultLocIQ)
-    return LocIq_Loc;
+    var pointLoc = Point(longitude, latitude);
+    values.push(pointLoc);
+    try{
+    const res = await client.query(text, values)
+    console.log(res.rows[0])
+    return res.status(200).send("Error fetching location data from LokIQ.");
+    }catch(err){
+        console.log(err);
+        return res.status(500).send("Error uploading to database.");
+    }
 
 });
 
@@ -135,7 +144,7 @@ app.get('/', async (req, res) => {
     
 });
 
-app.listen(port, function() {
+app.listen(port,'0.0.0.0', function() {
     console.log(`Server is running on port ${port}`);
 });
 

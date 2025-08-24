@@ -1,4 +1,5 @@
 # JITSU BUDDIES
+
 This website is to give users the ability to find jujitsu partners in their current area based on their prefrences
 In the front end we use JQUERY and some ajax calls to the back end
 in the back end we use node.js and API calls to Location API service to get locations based on IP addresses. We can also find locations using only the address given by user.
@@ -16,3 +17,7 @@ Currently working on implement SQL Database with MySQL
 Run application:
 npm install
 npm run index.js or nodemon index.js
+
+npx kill-port 3000
+docker compose build --no-cache
+docker compose up --force-recreate
