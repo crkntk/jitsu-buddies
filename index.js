@@ -113,8 +113,8 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
     var resultLocIQ = LocIq_Loc.data[0];
-    let latitude = resultLocIQ.lat;
-    let longitude = resultLocIQ.lon;
+    let latitude = (resultLocIQ.lat).toString();
+    let longitude = (resultLocIQ.lon).toString();
     
     
     let pswdHash = await bcrypt.hash(user.password, saltRounds);
@@ -125,9 +125,9 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
                 training_preferences, intensity_preferences, pswd_hash, location) 
                 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`
 
-    let values = user;
+    let values = Object.values(user);
     values.push(pswdHash);
-    var pointLoc = Point(longitude, latitude);
+    var pointLoc = '(' + longitude+','+ latitude + ')';
     values.push(pointLoc);
     try{
     const res = await client.query(text, values)
