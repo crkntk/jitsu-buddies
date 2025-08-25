@@ -8,13 +8,17 @@
 </head>
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
     <div class="form-signin w-25 h-25 m-auto col-6">
-    <form method="get" action="/home">
+    <form method="get" action="/users" id="sign-up-form">
       
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
     
         <div class="form-floating">
-          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <input type="email" class="form-control" id="email" placeholder="name@example.com">
           <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="username" placeholder="">
+          <label for="floatingInput">Username</label>
         </div>
         <div class="form-floating">
           <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
@@ -26,12 +30,20 @@
             Remember me
           </label>
         </div>
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+        <button onclick="changeFormAction()" class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
       </form>
       <form method="get" action="/sign" >
         <button type="submit" class="btn btn-outline-info justify-content-end btn-sm mt-2" id="sign-up">Sign Up</button>
       </form>
       <p class="mt-5 mb-3 text-body-secondary">© 2017–2024</p>
     </div>
+    <script>
+      function changeFormAction() {
+            const form = document.getElementById('sign-up-form');
+            const username = document.getElementById("username").value
+            form.action = form.action +`/${username}/home` ;
+            alert('Form action URL changed to: ' + form.action);
+        }
+      </script>
 </body>
 </html>

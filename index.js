@@ -53,7 +53,7 @@ app.get('/users/:username/home', async (req, res) => {
    
     const text = 'SELECT * FROM users WHERE username = $1'
     const values = [req.params.username]
-    const selectedUser = db.query(text, values)
+    const selectedUser = await db.query(text, values)
     console.log(selectedUser);
     //render webpage with the papimap key and the location data 
     res.render('homepage.ejs',{
