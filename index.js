@@ -10,7 +10,7 @@ import pg  from "pg";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import sharp from "sharp";
-
+import path from "path"
 const saltRounds = 15
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 // Load environment variables from.env file
@@ -31,7 +31,8 @@ const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/"
 app.use(bodyParser.urlencoded({ extended: true }));
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(express.static("public"));
+//app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
 app.get('/searchPartners', (req, res) =>{
@@ -49,20 +50,38 @@ app.get('/searchPartners', (req, res) =>{
 
     
 });
-app.get('/users/:username/home', async (req, res) => {
+app.post('/users/:username/home', async (req, res) => {
    
-    const text = 'SELECT * FROM users WHERE username = $1'
+    const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
+                    training_preferences, intensity_preferences, academy_belt,
+                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
+                    FROM users WHERE user_name = $1`
     const values = [req.params.username]
     const selectedUser = await db.query(text, values)
-    console.log(selectedUser);
+    //console.log(selectedUser);
+    if(selectedUser.rows.length <= 0){
+        return res.status(400).message("This user doesnt exist pleas sign up");
+    }
+    let providedInfo = req.body;
+    console.log(req);
+    const providedPswd = providedInfo.password
+    const dbHash = selectedUser.rows[0].pswd_hash
+    const match = await bcrypt.compare(providedPswd, dbHash);
+    if(match){
     //render webpage with the papimap key and the location data 
+    const userInfo = selectedUser.rows[0]
     res.render('homepage.ejs',{
         papKey: key,
-        lat: resultLocIQ.lat,
-        lon: resultLocIQ.lon,
+        lat: userInfo.latitude,
+        lon: userInfo.longitude,
         sunTzuQuote: get_sanTzuQuote()
         });
+    }
+    else{
+        return res.redirect(status=400, url="/");
+    }
     });
+
 
 
 app.get('/sign', async (req, res) => {
