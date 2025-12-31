@@ -40,13 +40,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, 'public')));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
 
-app.get('/searchPartners', (req, res) =>{
+app.get('/searchPartners', async (req, res) =>{
     //this route searches for the top 10 partners based on algorithm
     // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
     // and return them in the response
+    console.log(req.query);
+     const text = `SELECT * FROM users
+                    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
 
-
-    let searchPartners = safe_Conversion(TempUsers.slice(1)); // TODO: This will be a call to database based on preferences and location remember to implement
+    let searchPartners = safe_Conversion(TempUsers.slice(1));
+    const values = [req.query.latitude,req.query.longitude];
+    const usersFoundResp = await db.query(text, values);
+    console.log(usersFoundResp.rows);
+    // TODO: This will be a call to database based on preferences and location remember to implement
     //other prefrences filtering will happen before response
 
     // TODO: Implement sorting based on algorithm
@@ -55,7 +61,7 @@ app.get('/searchPartners', (req, res) =>{
 
     
 });
-app.get('/users/:username/home', async (req, res) => {
+app.post('/users/:username/home', async (req, res) => {
    
     const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
@@ -67,8 +73,8 @@ app.get('/users/:username/home', async (req, res) => {
     if(selectedUser.rows.length <= 0){
         return res.status(400).message("This user doesnt exist pleas sign up");
     }
-    let providedInfo = req.query;
-    console.log(req.query);
+    let providedInfo = req.body;
+    console.log(req.body);
     const providedPswd = providedInfo.password
     const dbHash = selectedUser.rows[0].pswd_hash
     const match = await bcrypt.compare(providedPswd, dbHash);
@@ -83,7 +89,7 @@ app.get('/users/:username/home', async (req, res) => {
         });
     }
     else{
-        return res.redirect(status=400, url="/");
+        return res.redirect(400, url="/");
     }
     });
 

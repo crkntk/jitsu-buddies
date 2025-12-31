@@ -1,8 +1,9 @@
 import * as L from "https://cdn.jsdelivr.net/npm/leaflet@1.8.0/dist/leaflet-src.esm.js"
 const key = $("#initmap-script").attr('papKey').toString();
-let currUserLat;
-let curUserLong;
+
 import {map,youMarkerIcon} from '../maps/homepage_map.js';
+const currUserLat = Number($("#latitude")[0].innerHTML);
+const currUserLong = Number($("#longitude")[0].innerHTML);
 
 $(".nav-bar-opt").toggle(0);
 $("#search-button").on("click", async function(){
@@ -10,7 +11,8 @@ $("#search-button").on("click", async function(){
         {
             url: "/searchPartners",
             data: {
-                
+                latitude:currUserLat,
+                longitude:currUserLong
             },
             success: function(data) {
                 console.log(data);
