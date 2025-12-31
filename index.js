@@ -55,20 +55,20 @@ app.get('/searchPartners', (req, res) =>{
 
     
 });
-app.post('/users/:username/home', async (req, res) => {
+app.get('/users/:username/home', async (req, res) => {
    
     const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
     const values = [req.params.username]
-    const selectedUser = await db.query(text, values)
+    const selectedUser = await db.query(text, values);
     //console.log(selectedUser);
     if(selectedUser.rows.length <= 0){
         return res.status(400).message("This user doesnt exist pleas sign up");
     }
-    let providedInfo = req.body;
-    console.log(req);
+    let providedInfo = req.query;
+    console.log(req.query);
     const providedPswd = providedInfo.password
     const dbHash = selectedUser.rows[0].pswd_hash
     const match = await bcrypt.compare(providedPswd, dbHash);
