@@ -1,4 +1,5 @@
 import express from 'express'
+import session from 'express-session'
 import fs from 'fs'
 import axios from 'axios'
 import bodyParser from 'body-parser'
@@ -35,6 +36,12 @@ const port = 3000;
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/"
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: 'auto' } // Use secure cookies in production (requires HTTPS)
+}));
 const __dirname = dirname(fileURLToPath(import.meta.url));
 //app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,7 +51,7 @@ app.get('/searchPartners', async (req, res) =>{
     //this route searches for the top 10 partners based on algorithm
     // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
     // and return them in the response
-    console.log(req.query);
+    console.log(req);
      const text = `SELECT * FROM users
                     WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
 
@@ -73,8 +80,14 @@ app.post('/users/:username/home', async (req, res) => {
     if(selectedUser.rows.length <= 0){
         return res.status(400).message("This user doesnt exist pleas sign up");
     }
-    let providedInfo = req.body;
-    console.log(req.body);
+    let providedInfo;
+    if(req.body){
+       providedInfo = req.body;
+    }
+    else if (req.session.userData){
+        providedInfo = req.session.userData;
+    }
+    console.log(req.session);
     const providedPswd = providedInfo.password
     const dbHash = selectedUser.rows[0].pswd_hash
     const match = await bcrypt.compare(providedPswd, dbHash);
@@ -156,10 +169,14 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     values.push(pointLoc);
     console.log("RIGHT BEFORE DATABASE")
     try{
-        console.log(user);
+        //console.log(user);
         const resDB = await db.query(text, values)
         //console.log(res.rows[0])
-        return res.redirect(`../users/${user.username}/home`);
+        req.session.userData = req.body;
+        req.session.save(err => {
+            if (err) return next(err);
+            res.redirect(307,`../users/${user.username}/home`);
+        })
     }catch(err){
         console.log(err);
         return res.status(500).send("Error uploading to database.");
