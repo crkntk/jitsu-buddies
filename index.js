@@ -1,4 +1,5 @@
 import express from 'express'
+import fs from 'fs'
 import axios from 'axios'
 import bodyParser from 'body-parser'
 import { dirname } from "path";
@@ -16,11 +17,15 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 // Load environment variables from.env file
 dotenv.config();
 const db = new pg.Client({
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    host: 'localhost',
-    database: process.env.DATABASE_NAME,
-    port: process.env.DATABASE_PORT,
+    user: process.env.AIVEN_USERNAME,
+    password: process.env.AIVEN_PASSWORD,
+    host: process.env.AIVEN_HOST,
+    database: process.env.AIVEN_DATABASE,
+    port: process.env.AIVEN_PORT,
+    ssl: {
+    rejectUnauthorized: true,
+    ca: fs.readFileSync("./certificates/db/ca.pem").toString(),
+  }
 });
 await db.connect();
 const key = process.env.PMAP_KEY ;
