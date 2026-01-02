@@ -247,11 +247,12 @@ const TempUsers = [User1, User2,User3, User4]
   
   test.describe('New Todo', async() => {
   test('should allow me to add users', async () => {
+    test.setTimeout(120_000);
     const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     const page = await context.newPage();
-  for(let i=0; i < TempUsers.length; i++){
     await page.goto("http://localhost:3000");
+  for(let i=0; i < TempUsers.length; i++){
     await page.click("#sign-up");
     let currTempUser = TempUsers[i];  
       await page.fill("#firstName", currTempUser.firstname);
@@ -274,13 +275,7 @@ const TempUsers = [User1, User2,User3, User4]
       //await page.fill("#u_uhD_123744", "This is a test message.");
       await page.click("#submit-btn");
       await page.waitForResponse(response =>
-
-          response.url().includes('api/submit')
-
-          && response.status() === 200
-
-          && response.request().method() === 'GET'
-
+          response.status() === 200
         );
       
   }

@@ -30,7 +30,7 @@ const db = new pg.Client({
 });
 await db.connect();
 const key = process.env.PMAP_KEY ;
-const LokIQ =  process.env.LOCATIONIQ_TOKEN ;
+const LokIQ =  process.env.LOCATIONIQ_TOKEN;
 const app = express();
 const port = 3000;
 const ipifyUrl = "https://api.ipify.org?format=json";
@@ -170,23 +170,17 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     console.log("RIGHT BEFORE DATABASE")
     try{
         //console.log(user);
-        const resDB = await db.query(text, values)
+        const resDB = await db.query(text, values);
         //console.log(res.rows[0])
-        req.session.userData = req.body;
-        req.session.save(err => {
-            if (err) return next(err);
-            res.redirect(307,`../users/${user.username}/home`);
-        })
+        res.status(200).sendFile(__dirname + '/public/sign_in.html');
     }catch(err){
         console.log(err);
-        return res.status(500).send("Error uploading to database.");
+        return res.status(500).send("Error creating user.");
     }
 
 });
 
-app.get('/', async (req, res) => {
-    
-});
+
 
 app.listen(port,'0.0.0.0', function() {
     console.log(`Server is running on port ${port}`);
@@ -214,189 +208,6 @@ function get_sanTzuQuote(){
     }
     return quote;
 }
-
-let User1 = {
-    address: '23 E. Correll Rd',
-    city: 'Heber',
-    state: 'CA',
-    zip: '92249',
-    country: 'USA',
-    name: 'John Doe 1',
-    username: 'CoolBelt'
-}
-let User2 = {
-    address: '672 Las Villas Street',
-    city: 'Imperial',
-    state: 'CA',
-    zip: '92251',
-    country: 'USA',
-    name: 'John Doe 2',
-    lat: 32.836110,
-    lon: -115.586950,
-    username: 'CoolBelt2',
-    experience:
-    {
-        belt: "blue",
-        academy: "morales jujitsu",
-        years: 15,
-        certification: "World Jujitsu Champion",
-        otherGrappling:["wrestling", "judo"]
-    }
-    ,
-    preferences:
-    {
-        weightRange: [120,180],
-        grapplingStyles: ["judo", "wrestling",'jujitsu'],
-        ageRange: [25,35],
-        meetPrefrences: ['drill new moves', 'sparr'],
-        beltPrefrence:
-        {
-            white: true,
-            blue: true,
-            purple: true,
-            brown: true,
-            black: true
-        }
-        
-    }
-    ,
-    weight: 150
-    ,
-    availability: 
-    {
-        daysOfWeek:
-         {
-             Monday: true,
-             Tuesday: true,
-             Wednesday: true,
-             Thursday: true,
-             Friday: true,
-             Saturday: false,
-             Sunday: false
-         },
-        timesOfDay: 
-         {
-             morning: true,
-             afternoon: true,
-             evening: true
-         },
-        maxDistance: 10
-    }
-}
-let User3 = {
-    address: '2806 Parkway Street',
-    city: 'El Centro',
-    state: 'CA',
-    zip: '92243',
-    country: 'USA',
-    name: 'John Doe 2',
-    lat: 32.682480,
-    lon: -115.634949,
-    username: 'CoolBelt3',
-    experience:
-    {
-        belt: "purple",
-        academy: "morales jujitsu",
-        years: 15,
-        certification: "World Jujitsu Champion",
-        otherGrappling:["wrestling", "judo"]
-    }
-    ,
-    preferences:
-    {
-        weightRange: [120,180],
-        grapplingStyles: ["judo", "wrestling",'jujitsu'],
-        ageRange: [25,35],
-        meetPrefrences: ['drill new moves', 'sparr'],
-        beltPrefrence:
-        {
-            white: true,
-            blue: true,
-            purple: true,
-            brown: true,
-            black: true
-        }
-        
-    },
-    weight: 150,
-    availability: 
-    {
-        daysOfWeek:
-         {
-             Monday: true,
-             Tuesday: true,
-             Wednesday: true,
-             Thursday: true,
-             Friday: true,
-             Saturday: false,
-             Sunday: false
-         },
-        timesOfDay: 
-         {
-             morning: true,
-             afternoon: true,
-             evening: true
-         },
-        maxDistance: 10
-    }
-}
-let User4 = {
-    address: '853 Parkway Street',
-    city: 'El Centro',
-    state: 'CA',
-    zip: '92243',
-    country: 'USA',
-    name: 'John Doe 2',
-    lat: 32.868767,
-    lon: -115.575333,
-    username: 'CoolBelt4',
-    experience:
-    {
-        belt: "black",
-        academy: "morales jujitsu",
-        years: 15,
-        certification: "World Jujitsu Champion",
-        otherGrappling:["wrestling", "judo"]
-    },
-    preferences:
-    {
-        weightRange: [120,180],
-        grapplingStyles: ["judo", "wrestling",'jujitsu'],
-        ageRange: [25,35],
-        meetPrefrences: ['drill new moves', 'sparr'],
-        beltPrefrence:
-        {
-            white: true,
-            blue: true,
-            purple: true,
-            brown: true,
-            black: true
-        }
-        
-    },
-    weight: 150,
-    availability: 
-    {
-        daysOfWeek:
-         {
-             Monday: true,
-             Tuesday: true,
-             Wednesday: true,
-             Thursday: true,
-             Friday: true,
-             Saturday: false,
-             Sunday: false
-         },
-        timesOfDay: 
-         {
-             morning: true,
-             afternoon: true,
-             evening: true
-         },
-        maxDistance: 10
-    }
-}
-const TempUsers = [User1, User2,User3, User4]
 
 function validateEmail(email){
     return email.match(

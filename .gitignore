@@ -138,3 +138,6 @@ dist
 
 #ssl certificates
 certificates
+
+# Playwright
+/playwright/.auth/
