@@ -17,9 +17,9 @@ L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${key}
     crossOrigin: true
 }).addTo(map);
 
-
+let belt = $("#initmap-script").attr('belt').toString();
 var myIcon = L.icon({
-    iconUrl: '/images/belts/blue.png',
+    iconUrl: '../../images/belts/'+ belt +'.png',
     iconSize: [25, 25],
 });
 
