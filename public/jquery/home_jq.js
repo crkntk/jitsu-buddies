@@ -41,8 +41,6 @@ $(".class-arrow").on("click", function(){
 
 
 function putIconsMap(user) {
-    currUserLat = user.lat;
-    curUserLong = user.lon;
     console.log(user);
     const popContent = createPopupHTML(user);
     console.log(popContent);
@@ -78,6 +76,7 @@ function putIconsMap(user) {
 
 function createPopupHTML(user) {
     let grapplingStyles = "";
+    console.log(user);
     for (var i = 0; i <user.experience.otherGrappling.length; i++){
         grapplingStyles = grapplingStyles + " " + user.experience.otherGrappling[i];
     }

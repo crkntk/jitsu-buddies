@@ -239,49 +239,44 @@ let User4 = {
 const TempUsers = [User1, User2,User3, User4]
 
 
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
-  const page = await context.newPage();
   test.beforeEach(async () => {
   });
   
-  test.describe('New Todo', async() => {
   test('should allow me to add users', async () => {
     test.setTimeout(120_000);
+  for(let i=0; i < TempUsers.length; i++){
     const browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("http://localhost:3000");
-  for(let i=0; i < TempUsers.length; i++){
     await page.click("#sign-up");
     let currTempUser = TempUsers[i];  
-      await page.fill("#firstName", currTempUser.firstname);
-      await page.fill("#LastName", currTempUser.lastName);
-      await page.fill("#username", currTempUser.username);
-      await page.fill("#academyName", currTempUser.experience.academy);
-      await page.fill("#address", currTempUser.address);
-      await page.selectOption("#state", currTempUser.state);
-      await page.fill("#academyName",currTempUser.experience.academy );
-      await page.fill("#city", currTempUser.city);
-      await page.fill("#zip", currTempUser.zip);
-      await page.fill("#email",  currTempUser.firstname + "@gmail.com");
-      await page.selectOption("#belt",  currTempUser.experience.belt);
-      await page.setInputFiles("#formFile", "./pictures/profile_pic.jpg");
-      await page.getByLabel("Drill New Moves").setChecked(true);
-      await page.getByLabel("Flow Roll").setChecked(true);
-      await page.check("#flexRadioDefault2");
-      await page.click("#next-btn");
-      await page.fill("#inputPassword6", "pikapika1");
+    await page.fill("#firstName", currTempUser.firstname);
+    await page.fill("#LastName", currTempUser.lastName);
+    await page.fill("#username", currTempUser.username);
+    await page.fill("#academyName", currTempUser.experience.academy);
+    await page.fill("#address", currTempUser.address);
+    await page.selectOption("#state", currTempUser.state);
+    await page.fill("#academyName",currTempUser.experience.academy );
+    await page.fill("#city", currTempUser.city);
+    await page.fill("#zip", currTempUser.zip);
+    await page.fill("#email",  currTempUser.firstname + "@gmail.com");
+    await page.selectOption("#belt",  currTempUser.experience.belt);
+    await page.setInputFiles("#formFile", "./pictures/profile_pic.jpg");
+    await page.getByLabel("Drill New Moves").setChecked(true);
+    await page.getByLabel("Flow Roll").setChecked(true);
+    await page.getByLabel("Brazilian Jujitsu").setChecked(true);
+    await page.getByLabel("Kung Fu").setChecked(true);
+    await page.check("#flexRadioDefault2");
+    await page.click("#next-btn");
+    await page.fill("#inputPassword6", "pikapika1");
       //await page.fill("#u_uhD_123744", "This is a test message.");
-      await page.click("#submit-btn");
-      await page.waitForResponse(response =>
-          response.status() === 200
-        );
-      
+    await page.click("#submit-btn");
+    await page.waitForTimeout(2000);
+    
   }
   await browser.close();
   });
-});
 
   //await page.screenshot({ path: "file-demo.png" });
   //await browser.close();

@@ -55,10 +55,11 @@ app.get('/searchPartners', async (req, res) =>{
      const text = `SELECT * FROM users
                     WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
 
-    let searchPartners = safe_Conversion(TempUsers.slice(1));
+    //let searchPartners = safe_Conversion(TempUsers.slice(1));
     const values = [req.query.latitude,req.query.longitude];
     const usersFoundResp = await db.query(text, values);
     console.log(usersFoundResp.rows);
+    let searchPartners = safe_Conversion(usersFoundResp.rows);
     // TODO: This will be a call to database based on preferences and location remember to implement
     //other prefrences filtering will happen before response
 
@@ -102,7 +103,7 @@ app.post('/users/:username/home', async (req, res) => {
         });
     }
     else{
-        return res.redirect(400, url="/");
+        return res.redirect("/");
     }
     });
 
@@ -117,7 +118,7 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/createUser',upload.single('photo'), async (req, res) => {
-    //console.log(Object.keys(req.body));
+    //(Object.keys(req.body));
     let photoBuf = null, photoMime = null;
     if (req.file) {
       // validate and optimize
@@ -156,9 +157,9 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     //var resultLocIQ = LocIq_Loc.data[0];
     const text = `INSERT INTO users(
                 first_name, last_name, user_name, academy_name,
-                address, city, us_state, zipcode, email, academy_belt, phone, weight, bio,
-                training_preferences, intensity_preferences, pswd_hash,profile_picture, location) 
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`
+                address, city, us_state, zipcode, email, academy_belt, phone, weight, bio, grappling_experience,
+                striking_experience,training_preferences, intensity_preferences, pswd_hash,profile_picture, location) 
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING id`
     user["password"] = pswdHash
     if (user["weight"] == ''){
         user["weight"] = 0.0
@@ -171,8 +172,8 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     try{
         //console.log(user);
         const resDB = await db.query(text, values);
-        //console.log(res.rows[0])
-        res.status(200).sendFile(__dirname + '/public/sign_in.html');
+        console.log(resDB.rows[0])
+        res.status(200).redirect("/");
     }catch(err){
         console.log(err);
         return res.status(500).send("Error creating user.");
