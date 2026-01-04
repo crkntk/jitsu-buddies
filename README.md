@@ -12,7 +12,10 @@ click sign in in the home page without any input data.
 currently working on the sign up with preferences page as well
 We have some predefined data in index.js
 
-Currently working on implement SQL Database with MySQL
+Currently Postgres database is hosted in Aiven service. It can also be ran locally with the schema.
+Still working on changing some things for hosting.
+This currently works to add users sign in and find users in a 10 km distance but working on addimg them based on prefrences.
+Playwrite scripts were added to automate the signing and population of database
 
 Run application:
 npm install
