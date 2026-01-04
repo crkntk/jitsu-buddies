@@ -120,21 +120,30 @@ app.post('/users/:username/home', async (req, res) => {
 
 
 app.get('/sign', async (req, res) => {
-    console.log("Route was ran");
+    /*
+        This endpoint is for users to sign up for an account
+        responding with signup html content
+    */
     res.sendFile(__dirname + '/public/sign_up.html');
  });
 app.get('/', async (req, res) => {
+    /*
+        This endpiont is for users to sign in  to their account
+    */
    res.sendFile(__dirname + '/public/sign_in.html');
 });
 
 app.post('/createUser',upload.single('photo'), async (req, res) => {
-    //(Object.keys(req.body));
-    let photoBuf = null, photoMime = null;
+    /*
+        This enpiont is to create a new user with user information like address, triaining prefrences and other expereince
+        provided my the front end. A photo from the user is also provided.
+    */
+    let photoBuf = null, photoMime = null; //Buffor for out photo data information transfered
     if (req.file) {
-      // validate and optimize
+      // validate and optimize We get the file and check what type of image it is
       const allowed = new Set(['image/jpeg','image/png','image/webp']);
       if (!allowed.has(req.file.mimetype)) throw new Error('Unsupported image type');
-
+        //This is to resized our photo and change quality in order to show in the front end
       photoBuf = await sharp(req.file.buffer)
         .rotate()
         .resize({ width: 1024, withoutEnlargement: true })
@@ -142,49 +151,49 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         .toBuffer();
       photoMime = 'image/webp';
     }
-
-
-    let user = req.body;
-    user["photo"] = photoBuf;
-    let LocIq_Loc;
+    let user = req.body; //Get user information from the body to create user in database
+    user["photo"] = photoBuf; //Add the photo buffer that is in our proccessed variable 
+    let LocIq_Loc; //variable for our location 
     // construct the LokIQ API query URL with the user's address, city, state, and zip code
     
     const Addquery = locIQAPI+LokIQ+ "&q=" +user.address + "%2C%20" + user.city + "%2C%20" + user.state + "%2C%20" + user.zip + "%20&format=json";
     // Calling api to fetch location of latitude and longitude based on address we query locatoniq
     try{
+        //Try and query service to get the longitude and lattitude using user information address address city and state
     LocIq_Loc = await axios.get(Addquery);
     }
     catch(err){
+        //Catch error if we could not get a location from lokIQ SERVICE
         console.error("Error fetching location data from LokIQ:", err.message);
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
+    //Get data longitude and lattitude from our responde from lokIQ service
     var resultLocIQ = LocIq_Loc.data[0];
     let latitude = (resultLocIQ.lat).toString();
     let longitude = (resultLocIQ.lon).toString();
-    
-    
+    //Hash our password provided using bycypt libraray with saltRounds for extra safety
     let pswdHash = await bcrypt.hash(user.password, saltRounds);
-    //var resultLocIQ = LocIq_Loc.data[0];
+    //Create query with the provided infor we have constructed to insert the new user into the database
     const text = `INSERT INTO users(
                 first_name, last_name, user_name, academy_name,
                 address, city, us_state, zipcode, email, academy_belt, phone, weight, bio, grappling_experience,
                 striking_experience,training_preferences, intensity_preferences, pswd_hash,profile_picture, location) 
                 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING id`
-    user["password"] = pswdHash
+    user["password"] = pswdHash; //Set the created password hash in the array of values to insert to database
+
     if (user["weight"] == ''){
+        //Set weight paramater as default to 0 if it was nto provided
         user["weight"] = 0.0
     }
-    
-    let values = Object.values(user);
-    var pointLoc = `POINT(${longitude} ${latitude})`;;
-    values.push(pointLoc);
-    console.log("RIGHT BEFORE DATABASE")
+    let values = Object.values(user); //set object of values constructed and given
+    var pointLoc = `POINT(${longitude} ${latitude})`;; // construct point for our Database query since we sue postgis
+    values.push(pointLoc); //Push point type for our query
     try{
-        //console.log(user);
-        const resDB = await db.query(text, values);
-        //console.log(resDB.rows[0])
-        res.status(200).redirect("/");
+        //We try to query our database and redirect to sigin page accordingly
+        const resDB = await db.query(text, values); //Query our database with constructed query and balues
+        res.status(200).redirect("/"); //Redirect to sign in page
     }catch(err){
+        //If there is an error when we query the database we catch it and respond accordingly
         console.log(err);
         return res.status(500).send("Error creating user.");
     }
