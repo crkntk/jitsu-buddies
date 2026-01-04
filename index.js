@@ -13,10 +13,14 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import sharp from "sharp";
 import path from "path"
-const saltRounds = 15
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+const saltRounds = 15 //Salt rounds for hashing password
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
 // Load environment variables from.env file
-dotenv.config();
+dotenv.config(); //Load in environment variables
+/*
+This is to start the client for our database. Currently we use Aiven service to host postgress database
+Database can be ran locally the schema is needed. If running locally ssl is not needed.
+*/
 const db = new pg.Client({
     user: process.env.AIVEN_USERNAME,
     password: process.env.AIVEN_PASSWORD,
@@ -28,13 +32,15 @@ const db = new pg.Client({
     ca: fs.readFileSync("./certificates/db/ca.pem").toString(),
   }
 });
-await db.connect();
-const key = process.env.PMAP_KEY ;
-const LokIQ =  process.env.LOCATIONIQ_TOKEN;
-const app = express();
-const port = 3000;
+await db.connect(); //connect to database
+const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service
+const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given
+const app = express(); //Start express app instance
+const port = 3000; //We run on port
+//These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
-const ipapiUrl = "https://ipapi.co/"
+const ipapiUrl = "https://ipapi.co/";
+//Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
@@ -42,30 +48,25 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: 'auto' } // Use secure cookies in production (requires HTTPS)
 }));
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url)); //We find our absolute directory name
 //app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
-const locIQAPI = "https://us1.locationiq.com/v1/search?key=";
+const locIQAPI = "https://us1.locationiq.com/v1/search?key="; //Set location api url service
 
 app.get('/searchPartners', async (req, res) =>{
-    //this route searches for the top 10 partners based on algorithm
-    // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
-    // and return them in the response
-    console.log(req);
-     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
+    /*This route searches for the closest partners based on distance
+        and training prefrences
+    */
+    //Create query to find partners based on given distance and attributes still needs to change
+     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio,
                     training_preferences, intensity_preferences, academy_belt,grappling_experience,striking_experience,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude FROM users
                     WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
 
-    //let searchPartners = safe_Conversion(TempUsers.slice(1));
-    const values = [req.query.latitude,req.query.longitude];
-    const usersFoundResp = await db.query(text, values);
-    //console.log(usersFoundResp.rows);
-    let searchPartners = safe_Conversion(usersFoundResp.rows);
-    // TODO: This will be a call to database based on preferences and location remember to implement
-    //other prefrences filtering will happen before response
-
-    // TODO: Implement sorting based on algorithm
+    const values = [req.query.latitude,req.query.longitude]; //Get values from our request parameter
+    const usersFoundResp = await db.query(text, values);    //Query our database
+    let searchPartners = safe_Conversion(usersFoundResp.rows); //This calls our safe conversion to convert values to variables asked for in front end
+    //respond with the partners that were found given certain params
     res.send(searchPartners);
 
 
