@@ -42,14 +42,16 @@ $(".class-arrow").on("click", function(){
 
 function putIconsMap(user) {
     console.log(user);
+    let currUserLat = user.lat;
+    let curUserLong = user.lon;
     const popContent = createPopupHTML(user);
     console.log(popContent);
     let sizeOfIcon = [20, 20];
-    if(user.experience.belt === "black"){
+    if(user.academy_belt === "black"){
         sizeOfIcon = [25,25]
     }
     var myIcon = L.icon({
-        iconUrl: "/images/belts/" + user.experience.belt + ".png",
+        iconUrl: "/images/belts/" + user.academy_belt + ".png",
         iconSize: sizeOfIcon,
     });
     
@@ -76,14 +78,18 @@ function putIconsMap(user) {
 
 function createPopupHTML(user) {
     let grapplingStyles = "";
+    let strikingStyles = ""
     console.log(user);
-    for (var i = 0; i <user.experience.otherGrappling.length; i++){
-        grapplingStyles = grapplingStyles + " " + user.experience.otherGrappling[i];
+    for (var i = 0; i <user.striking_experience.length; i++){
+        strikingStyles = strikingStyles + " " + user.striking_experience[i];
+    }
+    for (var i = 0; i <user.grappling_experience.length; i++){
+        grapplingStyles = grapplingStyles + " " + user.grappling_experience[i];
     }
     let meetPrefrences = "";
-    for (var i = 0; i <user.preferences.meetPrefrences.length; i++){
-        meetPrefrences = meetPrefrences + ", " + user.preferences.meetPrefrences[i];
-    }
-    return `<h2> Username: ${user.username} </h2><p> Academy: ${user.experience.academy}</p> <p> Belt: ${user.experience.belt}</p> <p>Weight: ${user.weight}</p> <p>Grappling Styles: ${grapplingStyles}</p> <p>Meeting Prefrences: ${meetPrefrences}</p> <button class='popUp-meet'>Set Meet</button> `;
+    //for (var i = 0; i <user.preferences.meetPrefrences.length; i++){
+        //meetPrefrences = meetPrefrences + ", " + user.preferences.meetPrefrences[i];
+    //}
+    return `<h2> Username: ${user.username} </h2><p> Academy: ${user.academy}</p> <p> Belt: ${user.academy_belt}</p> <p>Weight: ${user.weight}</p> <p>Grappling Styles: ${grapplingStyles}</p> <p>Striking Styles: ${strikingStyles}</p> <p>Meeting Prefrences: ${meetPrefrences}</p> <button class='popUp-meet'>Set Meet</button> `;
 
 }

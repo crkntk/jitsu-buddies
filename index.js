@@ -52,13 +52,15 @@ app.get('/searchPartners', async (req, res) =>{
     // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
     // and return them in the response
     console.log(req);
-     const text = `SELECT * FROM users
+     const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
+                    training_preferences, intensity_preferences, academy_belt,grappling_experience,striking_experience,
+                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude FROM users
                     WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
 
     //let searchPartners = safe_Conversion(TempUsers.slice(1));
     const values = [req.query.latitude,req.query.longitude];
     const usersFoundResp = await db.query(text, values);
-    console.log(usersFoundResp.rows);
+    //console.log(usersFoundResp.rows);
     let searchPartners = safe_Conversion(usersFoundResp.rows);
     // TODO: This will be a call to database based on preferences and location remember to implement
     //other prefrences filtering will happen before response
@@ -71,7 +73,7 @@ app.get('/searchPartners', async (req, res) =>{
 });
 app.post('/users/:username/home', async (req, res) => {
    
-    const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
+    const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
@@ -88,7 +90,7 @@ app.post('/users/:username/home', async (req, res) => {
     else if (req.session.userData){
         providedInfo = req.session.userData;
     }
-    console.log(req.session);
+    //console.log(req.session);
     const providedPswd = providedInfo.password
     const dbHash = selectedUser.rows[0].pswd_hash
     const match = await bcrypt.compare(providedPswd, dbHash);
@@ -172,7 +174,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     try{
         //console.log(user);
         const resDB = await db.query(text, values);
-        console.log(resDB.rows[0])
+        //console.log(resDB.rows[0])
         res.status(200).redirect("/");
     }catch(err){
         console.log(err);
@@ -191,15 +193,20 @@ function safe_Conversion(usersArray){
     // TODO: implement safe conversion function for latitude and longitude
     // takes in an array of users and converts to objects with safe data 
     // returns an array of safe user objects
+    console.log(usersArray);
     return usersArray.map(user => ({
-        lat: user.lat,
-        lon: user.lon,
-        experience: user.experience,
-        preferences: user.preferences,
-        name: user.name,
+        lat: user.latitude,
+        lon: user.longitude,
+        grappling_experience: user.grappling_experience,
+        striking_experience: user.striking_experience,
+        intensity_preferences: user.intensity_preferences,
+        training_preferences: user.training_preferences,
+        first_name: user.first_name,
+        last_name: user.last_name,
         weight: user.weight,
-        username: user.username,
-        belt: user.belt
+        username: user.user_name,
+        belt: user.academy_belt,
+        academy: user.academy_name
     }));
 }
 function get_sanTzuQuote(){
