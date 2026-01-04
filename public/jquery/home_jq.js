@@ -51,7 +51,7 @@ function putIconsMap(user) {
         sizeOfIcon = [25,25]
     }
     var myIcon = L.icon({
-        iconUrl: "/images/belts/" + user.academy_belt + ".png",
+        iconUrl: "../../images/belts/" + user.belt + ".png",
         iconSize: sizeOfIcon,
     });
     

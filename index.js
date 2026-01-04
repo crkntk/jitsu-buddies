@@ -52,7 +52,7 @@ app.get('/searchPartners', async (req, res) =>{
     // TODO: Implement this endpoint to fetch the top 10 partners based on algorithm
     // and return them in the response
     console.log(req);
-     const text = `SELECT first_name, last_name, academy_name, weight, bio, pswd_hash,
+     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,grappling_experience,striking_experience,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude FROM users
                     WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
@@ -101,6 +101,7 @@ app.post('/users/:username/home', async (req, res) => {
         papKey: key,
         lat: userInfo.latitude,
         lon: userInfo.longitude,
+        academyBelt: userInfo.academy_belt,
         sunTzuQuote: get_sanTzuQuote()
         });
     }
