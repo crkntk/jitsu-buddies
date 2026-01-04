@@ -73,31 +73,36 @@ app.get('/searchPartners', async (req, res) =>{
     
 });
 app.post('/users/:username/home', async (req, res) => {
-   
+   /*
+        This endpoint returns a hompage for the user that requested it. 
+   */
+    //We construct a query to get the current user information from our database and their location for the map
     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
-    const values = [req.params.username]
-    const selectedUser = await db.query(text, values);
-    //console.log(selectedUser);
+    const values = [req.params.username] //Add the username param to our query for safe quering
+    const selectedUser = await db.query(text, values); //query database safely with values and query text
     if(selectedUser.rows.length <= 0){
-        return res.status(400).message("This user doesnt exist pleas sign up");
+        //This branch is for is a user was not found or malformed input
+        return res.status(400).message("This user doesn't exist pleas sign up");
     }
-    let providedInfo;
+    let providedInfo; //This is for the information provided from our body
     if(req.body){
-       providedInfo = req.body;
+       providedInfo = req.body; //Get body informtion if it exists
     }
-    else if (req.session.userData){
+    else if (req.session.userData){ 
+        //Get from user session if needed
         providedInfo = req.session.userData;
     }
-    //console.log(req.session);
-    const providedPswd = providedInfo.password
-    const dbHash = selectedUser.rows[0].pswd_hash
-    const match = await bcrypt.compare(providedPswd, dbHash);
+    //We need to compare the user password hash from the request to the one in our database for verification
+    const providedPswd = providedInfo.password; //Get body password
+    const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
+    const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
     if(match){
-    //render webpage with the papimap key and the location data 
-    const userInfo = selectedUser.rows[0]
+    //render webpage with the papimap key and the location data if the hash passwords match
+    const userInfo = selectedUser.rows[0]; //Get the information from our database query
+    //Render our hompage with information retrieved from our database and a san tzue quote
     res.render('homepage.ejs',{
         papKey: key,
         lat: userInfo.latitude,
@@ -107,6 +112,7 @@ app.post('/users/:username/home', async (req, res) => {
         });
     }
     else{
+        //If our password hashes dont match we redirect to the sign in page
         return res.redirect("/");
     }
     });
