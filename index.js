@@ -89,7 +89,7 @@ app.post('/users/:username/home', async (req, res) => {
     }
     let providedInfo; //This is for the information provided from our body
     if(req.body){
-       providedInfo = req.body; //Get body informtion if it exists
+       providedInfo = req.body; //Get body information if it exists
     }
     else if (req.session.userData){ 
         //Get from user session if needed
@@ -159,7 +159,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     const Addquery = locIQAPI+LokIQ+ "&q=" +user.address + "%2C%20" + user.city + "%2C%20" + user.state + "%2C%20" + user.zip + "%20&format=json";
     // Calling api to fetch location of latitude and longitude based on address we query locatoniq
     try{
-        //Try and query service to get the longitude and lattitude using user information address address city and state
+        //Try and query service to get the longitude and latitude using user information address address city and state
     LocIq_Loc = await axios.get(Addquery);
     }
     catch(err){
@@ -167,7 +167,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         console.error("Error fetching location data from LokIQ:", err.message);
         return res.status(500).send("Error fetching location data from LokIQ.");
     }
-    //Get data longitude and lattitude from our responde from lokIQ service
+    //Get data longitude and latitude from our respond from lokIQ service
     var resultLocIQ = LocIq_Loc.data[0];
     let latitude = (resultLocIQ.lat).toString();
     let longitude = (resultLocIQ.lon).toString();
@@ -210,7 +210,7 @@ function safe_Conversion(usersArray){
     // TODO: implement safe conversion function for latitude and longitude
     // takes in an array of users and converts to objects with safe data 
     // returns an array of safe user objects
-    console.log(usersArray);
+    //We return all the user information that is safe to get back
     return usersArray.map(user => ({
         lat: user.latitude,
         lon: user.longitude,
@@ -227,6 +227,7 @@ function safe_Conversion(usersArray){
     }));
 }
 function get_sanTzuQuote(){
+    //This funciton returns a random santzu quote from the library. Needs to be short enough to dispplay
     let quote = sunTzu();
     while(quote.length > 108){
         quote = sunTzu();
@@ -235,17 +236,10 @@ function get_sanTzuQuote(){
 }
 
 function validateEmail(email){
+    /*
+    This functijon validates email for correct strucuture
+    */
     return email.match(
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
   };
-function parseNewUser(request){
-//parses request for database
-
- return {
-     username: request.body.username,
-     password: request.body.password,
-     email: request.body.email,
-     //add other fields as needed
- };
-};
