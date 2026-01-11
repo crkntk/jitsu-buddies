@@ -13,6 +13,8 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import sharp from "sharp";
 import path from "path"
+import passport from "passport"
+import { Strategy } from 'passport-local'
 const saltRounds = 15 //Salt rounds for hashing password
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
 // Load environment variables from.env file
@@ -42,12 +44,14 @@ const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: 'auto' } // Use secure cookies in production (requires HTTPS)
+  saveUninitialized: true
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 const __dirname = dirname(fileURLToPath(import.meta.url)); //We find our absolute directory name
 //app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -77,37 +81,15 @@ app.post('/users/:username/home', async (req, res) => {
         This endpoint returns a hompage for the user that requested it. 
    */
     //We construct a query to get the current user information from our database and their location for the map
-    const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
-                    training_preferences, intensity_preferences, academy_belt,
-                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
-                    FROM users WHERE user_name = $1`
-    const values = [req.params.username] //Add the username param to our query for safe quering
-    const selectedUser = await db.query(text, values); //query database safely with values and query text
-    if(selectedUser.rows.length <= 0){
-        //This branch is for is a user was not found or malformed input
-        return res.status(400).message("This user doesn't exist pleas sign up");
-    }
-    let providedInfo; //This is for the information provided from our body
-    if(req.body){
-       providedInfo = req.body; //Get body information if it exists
-    }
-    else if (req.session.userData){ 
-        //Get from user session if needed
-        providedInfo = req.session.userData;
-    }
-    //We need to compare the user password hash from the request to the one in our database for verification
-    const providedPswd = providedInfo.password; //Get body password
-    const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
-    const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
-    if(match){
+    let user = req.user;
+    if(req.isAuthenticated()){
     //render webpage with the papimap key and the location data if the hash passwords match
-    const userInfo = selectedUser.rows[0]; //Get the information from our database query
     //Render our hompage with information retrieved from our database and a san tzue quote
     res.render('homepage.ejs',{
         papKey: key,
-        lat: userInfo.latitude,
-        lon: userInfo.longitude,
-        academyBelt: userInfo.academy_belt,
+        lat: user.latitude,
+        lon: user.longitude,
+        academyBelt: user.academy_belt,
         sunTzuQuote: get_sanTzuQuote()
         });
     }
@@ -198,6 +180,59 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         return res.status(500).send("Error creating user.");
     }
 
+});
+
+passport.use(new Strategy( async function verify(password, username, cb){
+     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
+                    training_preferences, intensity_preferences, academy_belt,
+                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
+                    FROM users WHERE user_name = $1`
+    const values = [username] //Add the username param to our query for safe quering
+    try{
+    const selectedUser = await db.query(text, values); //query database safely with values and query text
+    }
+    catch(err){
+        return cb(err);
+    }
+    if(selectedUser.rows.length <= 0){
+        //This branch is for is a user was not found or malformed input
+        return cb("This user doesn't exist please sign up");
+    }
+    let providedInfo; //This is for the information provided from our body
+    if(req.body){
+       providedInfo = req.body; //Get body information if it exists
+    }
+    else if (req.session.userData){ 
+        //Get from user session if needed
+        providedInfo = req.session.userData;
+    }
+    //We need to compare the user password hash from the request to the one in our database for verification
+    const providedPswd = password; //Get body password
+    const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
+    try{
+    const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
+    }catch(err){
+        return cb (err);
+    }
+    if(match){
+    //render webpage with the papimap key and the location data if the hash passwords match
+    const user = selectedUser.rows[0]; //Get the information from our database query
+    //Render our hompage with information retrieved from our database and a san tzue quote
+    return cb(null, user);
+    }
+    else{
+        //If our password hashes dont match we redirect to the sign in page
+        return cb(null,false);
+    }
+
+}));
+
+passport.serializeUser( (user,cb)=>{
+    cb(null, user);
+});
+
+passport.deserializeUser( (user,cb)=>{
+    cb(null, user);
 });
 
 
