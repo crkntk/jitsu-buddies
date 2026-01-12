@@ -82,7 +82,7 @@ app.get('/searchPartners', async (req, res) =>{
 
     
 });
-app.post('/users/:username/home', async (req, res) => {
+app.get('/users/:username/home', async (req, res) => {
    /*
         This endpoint returns a hompage for the user that requested it. 
    */
@@ -121,16 +121,23 @@ app.get('/login', async (req, res) => {
     /*
         This endpiont is for users to sign in  to their account
     */
+   console.log("LOG IN ROUTE HIT");
    res.sendFile(__dirname + '/public/sign_in.html');
 });
-app.post('/login', passport.authenticate("local", {
+
+app.post('/login', (req, res, next) => {
+    console.log("LOGIN BODY:", req.body); // <-- if this prints {}, verify won't run
+    next();
+  }, passport.authenticate("local", {
     /*
         This endpiont is for users to sign in  to their account
     */
+
    failureRedirect: '/login',
    failureMessage: true
 }), 
 function(req, res) {
+    console.log("TRIED TO RUN");
     res.redirect('/users/' + req.user.username + "/home");
   }
     );
@@ -205,7 +212,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 
 });
 
-passport.use(new Strategy( async function verify(password, username, cb){
+passport.use(new Strategy( async function verify(username, password, cb){
     console.log("username:" + username);
 
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
@@ -213,32 +220,16 @@ passport.use(new Strategy( async function verify(password, username, cb){
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
     const values = [username] //Add the username param to our query for safe quering
-    try{
     const selectedUser = await db.query(text, values); //query database safely with values and query text
-    }
-    catch(err){
-        return cb(err);
-    }
     if(selectedUser.rows.length <= 0){
         //This branch is for is a user was not found or malformed input
         return cb("This user doesn't exist please sign up");
     }
     let providedInfo; //This is for the information provided from our body
-    if(req.body){
-       providedInfo = req.body; //Get body information if it exists
-    }
-    else if (req.session.userData){ 
-        //Get from user session if needed
-        providedInfo = req.session.userData;
-    }
     //We need to compare the user password hash from the request to the one in our database for verification
     const providedPswd = password; //Get body password
     const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
-    try{
     const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
-    }catch(err){
-        return cb (err);
-    }
     if(match){
     //render webpage with the papimap key and the location data if the hash passwords match
     const user = selectedUser.rows[0]; //Get the information from our database query
