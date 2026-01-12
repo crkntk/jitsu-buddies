@@ -8,7 +8,7 @@
 </head>
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
     <div class="form-signin w-25 h-25 m-auto col-6">
-    <form method="post" action="/users" id="sign-up-form">
+    <form method="post" action="/login" id="sign-up-form">
       
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
     
@@ -30,7 +30,7 @@
             Remember me
           </label>
         </div>
-        <button method="get" onclick="changeFormAction()" class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+        <button method="post" class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
       </form>
       <form method="get" action="/sign" >
         <button type="submit" class="btn btn-outline-info justify-content-end btn-sm mt-2" id="sign-up">Sign Up</button>

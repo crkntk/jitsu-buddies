@@ -42,14 +42,20 @@ const port = 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
+const cookieMaxAge = 1000 * 60;
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    maxAge:cookieMaxAge
+  }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 const __dirname = dirname(fileURLToPath(import.meta.url)); //We find our absolute directory name
@@ -82,7 +88,7 @@ app.post('/users/:username/home', async (req, res) => {
    */
     //We construct a query to get the current user information from our database and their location for the map
     let user = req.user;
-    if(req.isAuthenticated()){
+    if(await req.isAuthenticated()){
     //render webpage with the papimap key and the location data if the hash passwords match
     //Render our hompage with information retrieved from our database and a san tzue quote
     res.render('homepage.ejs',{
@@ -95,7 +101,8 @@ app.post('/users/:username/home', async (req, res) => {
     }
     else{
         //If our password hashes dont match we redirect to the sign in page
-        return res.redirect("/");
+        console.log("FAILED LOGIN");
+        return res.redirect("/login");
     }
     });
 
@@ -108,12 +115,25 @@ app.get('/sign', async (req, res) => {
     */
     res.sendFile(__dirname + '/public/sign_up.html');
  });
-app.get('/', async (req, res) => {
+
+ 
+app.get('/login', async (req, res) => {
     /*
         This endpiont is for users to sign in  to their account
     */
    res.sendFile(__dirname + '/public/sign_in.html');
 });
+app.post('/login', passport.authenticate("local", {
+    /*
+        This endpiont is for users to sign in  to their account
+    */
+   failureRedirect: '/login',
+   failureMessage: true
+}), 
+function(req, res) {
+    res.redirect('/users/' + req.user.username + "/home");
+  }
+    );
 
 app.post('/createUser',upload.single('photo'), async (req, res) => {
     /*
@@ -160,7 +180,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
                 first_name, last_name, user_name, academy_name,
                 address, city, us_state, zipcode, email, academy_belt, phone, weight, bio, grappling_experience,
                 striking_experience,training_preferences, intensity_preferences, pswd_hash,profile_picture, location) 
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING id`
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *`
     user["password"] = pswdHash; //Set the created password hash in the array of values to insert to database
 
     if (user["weight"] == ''){
@@ -172,8 +192,11 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     values.push(pointLoc); //Push point type for our query
     try{
         //We try to query our database and redirect to sigin page accordingly
-        const resDB = await db.query(text, values); //Query our database with constructed query and balues
+        const user = await db.query(text, values); //Query our database with constructed query and balues
+        req.login(user, (err) => {
+        console.log(err);
         res.status(200).redirect("/"); //Redirect to sign in page
+        });
     }catch(err){
         //If there is an error when we query the database we catch it and respond accordingly
         console.log(err);
@@ -183,6 +206,8 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 });
 
 passport.use(new Strategy( async function verify(password, username, cb){
+    console.log("username:" + username);
+
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
