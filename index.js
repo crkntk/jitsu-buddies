@@ -42,7 +42,7 @@ const port = 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
-const cookieMaxAge = 1000 * 60;
+const cookieMaxAge = 1000 * 60*60;
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -138,7 +138,7 @@ app.post('/login', (req, res, next) => {
 }), 
 function(req, res) {
     console.log("TRIED TO RUN");
-    res.redirect('/users/' + req.user.username + "/home");
+    res.redirect('/users/' + req.body.username + "/home");
   }
     );
 
