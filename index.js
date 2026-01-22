@@ -107,6 +107,12 @@ app.get('/users/:username/home', async (req, res) => {
     });
 
 
+app.get('/', async (req,res)=>{
+    res.render("main_page.ejs",{
+        sunTzuQuote: get_sanTzuQuote()
+    });
+})
+
 
 app.get('/sign', async (req, res) => {
     /*
