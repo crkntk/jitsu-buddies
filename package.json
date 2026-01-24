@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "concurrently \"npm:build:css\" \"npm:start\"",
+    "start": "nodemon index.js",
+    "build:css": "postcss ./public/css/main_page.css -o ./public/css/build_main.css --watch"
   },
   "author": "Carlos Reyes",
   "license": "ISC",
@@ -33,6 +34,12 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@types/node": "^24.3.0"
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^24.3.0",
+    "autoprefixer": "^10.4.23",
+    "concurrently": "^9.2.1",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.1.18"
   }
 }

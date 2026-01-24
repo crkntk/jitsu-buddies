@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/build_main.css" />
     <title>Document</title>
 </head>
 <body>
-    
+    <div class="grid grid-cols-1 gap-8 justify-items-center">
+        <div class="grid-item header-pos border-4 "> <%- include('partials/header.ejs', sunTzuQuote) %></div>
+        <div class="grid-item text-3xl border-4">Nav bar</div>
+        <div class="grid-item border-4 size-dvh bg-classic-crimson"> Main content</div>
+        <div class="grid-item border-4">Footer</div>
+    </div>
 </body>
 </html>
