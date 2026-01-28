@@ -2,7 +2,7 @@
 
 
 @theme {
-
+    --shadow-new::after 5px 35px 36px rgb(0, 0, 0, .70);
     --color-platinum: #edededff;
     --color-carbon-black: #171717ff;
     --color-gunmetal: #444444ff;
@@ -11,3 +11,4 @@
     --color-classic-crimson: #da0037ff;
     --color-magenta-bloom: #d6355dff;
 }
+
