@@ -59,8 +59,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 const __dirname = dirname(fileURLToPath(import.meta.url)); //We find our absolute directory name
-//app.use(express.static("public"));
+app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static("views/images"));
 const locIQAPI = "https://us1.locationiq.com/v1/search?key="; //Set location api url service
 
 app.get('/searchPartners', async (req, res) =>{
