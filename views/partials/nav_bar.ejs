@@ -6,16 +6,26 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="flex flex-row text-platinum gap-8 p-1 w-screen">
-    <div class=" w-64 flex-8 text-center">
+    <div class="flex flex-row text-platinum w-screen text-xl gap-8 p-1">
+        <% if(locals.loggedIn){      %>
+    <div class=" w-64 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson">
         Home
     </div>
-    <div class="w-64 flex-8 text-center">
+    <%}%>
+    <div class=" cursor-pointer w-32 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson transition duration-300 ease-in-out">
         Resources
     </div>
-    <div class="w-64 flex-8 text-center">
+    <div class="w-64 flex-8 text-center border-r-4">
         Help
     </div>
+    <% if(!locals.loggedIn){      %>
+    <div class="w-64 flex-8 text-center border-r-4 self-end">
+        Sign-In
+    </div>
+    <div class="w-64 flex-8 text-center border-r-4 self-end">
+        Create Account
+    </div>
+    <% } %>
     </div>
 </body>
 </html>
