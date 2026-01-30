@@ -103,7 +103,6 @@ app.get('/users/:username/home', async (req, res) => {
     }
     else{
         //If our password hashes dont match we redirect to the sign in page
-        console.log("FAILED LOGIN");
         return res.redirect("/login");
     }
     });
@@ -129,7 +128,6 @@ app.get('/login', async (req, res) => {
     /*
         This endpiont is for users to sign in  to their account
     */
-   console.log("LOG IN ROUTE HIT");
    res.sendFile(__dirname + '/public/sign_in.html');
 });
 app.get('/logout', function(req, res, next){
@@ -140,7 +138,6 @@ app.get('/logout', function(req, res, next){
 });
 
 app.post('/login', (req, res, next) => {
-    console.log("LOGIN BODY:", req.body); // <-- if this prints {}, verify won't run
     next();
   }, passport.authenticate("local", {
     /*
@@ -151,7 +148,6 @@ app.post('/login', (req, res, next) => {
    failureMessage: true
 }), 
 function(req, res) {
-    console.log("TRIED TO RUN");
     res.redirect('/users/' + req.body.username + "/home");
   }
     );
@@ -227,7 +223,6 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 });
 
 passport.use(new Strategy( async function verify(username, password, cb){
-    console.log("username:" + username);
 
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt,
