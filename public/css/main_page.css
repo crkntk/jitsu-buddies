@@ -12,4 +12,10 @@
     --color-magenta-bloom: #d6355dff;
     --font-kanit: "Kanit", sans-serif;
 }
-
+a {
+  text-decoration: none !important;
+  color: #edededff;
+}
+a:hover{
+    color: #da0037ff
+}

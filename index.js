@@ -97,7 +97,8 @@ app.get('/users/:username/home', async (req, res) => {
         lat: user.latitude,
         lon: user.longitude,
         academyBelt: user.academy_belt,
-        sunTzuQuote: get_sanTzuQuote()
+        sunTzuQuote: get_sanTzuQuote(),
+        loggedIn: true
         });
     }
     else{
@@ -130,6 +131,12 @@ app.get('/login', async (req, res) => {
     */
    console.log("LOG IN ROUTE HIT");
    res.sendFile(__dirname + '/public/sign_in.html');
+});
+app.get('/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
 
 app.post('/login', (req, res, next) => {

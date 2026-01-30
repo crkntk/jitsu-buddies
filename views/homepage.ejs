@@ -33,6 +33,14 @@
      <div class="header">
           <%- include('partials/header.ejs', sunTzuQuote) %>
      </div>
+     <script>
+     const params = new URLSearchParams(window.location.search);
+     const loggedIn = params.get('loggedIn'); // "123"
+     consol.log(loggedIn);
+</script>
+     <div id="navigation-bar">
+          <%- include('partials/nav_bar.ejs',loggedIn) %>
+     </div>
      <div id="nav-bar-cont">
           <div class="close-arrow-cont">
                <div class="class-arrow">
@@ -80,6 +88,8 @@
           </div>
      </div>
 </body>
+
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin="">
