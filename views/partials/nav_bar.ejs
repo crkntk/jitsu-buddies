@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/build_main.css" />
     <title>Document</title>
 </head>
 <body>
-    <div class="flex flex-row text-platinum w-screen text-xl gap-8 p-1">
+<div class="">
+    <div class="flex flex-row border-2 divide-x-3 divide-solid divide-indigo-500 text-sm text-platinum font-normal bg-carbon-black w-screen text-xl gap-0 outline-double outline-1 outline-offset-1 outline-gunmetal-500/50">
         <% if(locals.loggedIn){      %>
-    <div class=" w-64 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson">
+    <div class=" w-64 flex-4 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson">
         Home
     </div>
     <%}%>
-    <div class=" cursor-pointer w-32 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson transition duration-300 ease-in-out">
+    <button class=" cursor-pointer w-1 p-2 mx-32 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
         Resources
-    </div>
-    <div class="cursor-pointer w-32 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson transition duration-300 ease-in-out">
+    </button>
+    <div class="cursor-pointer w-1 p-2 mx-32 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum  transition duration-300 ease-in-out">
         Help
     </div>
     <% if(!locals.loggedIn){      %>
-    <div class="cursor-pointer w-32 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson transition duration-300 ease-in-out self-end">
+    <div class="cursor-pointer w-2 p-2 ml-16 mr-4 flex-2 text-center border-r-0 text-lg  hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
         Sign-In
     </div>
-    <div class="cursor-pointer w-32 flex-8 text-center border-r-4 hover:bg-platinum hover:text-classic-crimson transition duration-300 ease-in-out self-end">
+    <div class="cursor-pointer w-2 p-2 mx-6 flex-2 text-center border-r-0 text-lg  hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
         Create Account
     </div>
     <% } %>
+    </div>
     </div>
 </body>
 </html>
