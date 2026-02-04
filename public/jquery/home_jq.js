@@ -7,6 +7,7 @@ const currUserLong = Number($("#longitude")[0].innerHTML);
 
 $(".nav-bar-opt").toggle(0);
 $("#search-button").on("click", async function(){
+    
     await $.ajax(
         {
             url: "/searchPartners",

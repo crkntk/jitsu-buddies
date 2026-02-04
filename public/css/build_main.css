@@ -295,9 +295,6 @@
   .w-25 {
     width: calc(var(--spacing) * 25);
   }
-  .w-64 {
-    width: calc(var(--spacing) * 64);
-  }
   .w-100 {
     width: calc(var(--spacing) * 100);
   }
@@ -306,9 +303,6 @@
   }
   .flex-2 {
     flex: 2;
-  }
-  .flex-4 {
-    flex: 4;
   }
   .border-collapse {
     border-collapse: collapse;
@@ -321,6 +315,9 @@
   }
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .flex-col {
     flex-direction: column;
@@ -390,10 +387,6 @@
   .border-r-0 {
     border-right-style: var(--tw-border-style);
     border-right-width: 0px;
-  }
-  .border-r-4 {
-    border-right-style: var(--tw-border-style);
-    border-right-width: 4px;
   }
   .border-double {
     --tw-border-style: double;
@@ -524,13 +517,6 @@
   .outline-double {
     --tw-outline-style: double;
     outline-style: double;
-  }
-  .hover\:bg-platinum {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-platinum);
-      }
-    }
   }
   .hover\:text-classic-crimson {
     &:hover {
