@@ -10,8 +10,10 @@ $(".nav-bar-opt").toggle(0);
 
 $("#search-button").on("click", async function(){
     let tailwindClasses = 'z-20'
+    let transformPopup = 'scale-100 transform skew-0'
     let mainContent = 'z-0 pointer-events-none blur-sm'
     $('#search-popup').removeClass('hidden').addClass(tailwindClasses);
+     $('#search-popup').addClass(transformPopup);
     $('#main-content').addClass(mainContent);
 });
 const value = document.querySelector("#dist-value");
