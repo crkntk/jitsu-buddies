@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home</title>
     <link rel="stylesheet" href="/css/home.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -18,7 +18,7 @@
 </head>
 <!-- color pallet https://colorhunt.co/palette/171717444444da0037ededed colors: black 171717, grey 444444, red DA0037, light grey EDEDED -->
 <body>
-<div>
+     <div id="main-content" class="z-10">
      <div id="hidden-info">
                     <h1>Welcome to Jitsu Buddies</h1>
                     <h2>MAP</h2>
@@ -37,7 +37,6 @@
      <script>
      const params = new URLSearchParams(window.location.search);
      const loggedIn = params.get('loggedIn'); // "123"
-     consol.log(loggedIn);
 </script>
      <div id="navigation-bar">
           <%- include('partials/nav_bar.ejs',loggedIn) %>
@@ -88,10 +87,11 @@
                </div>
           </div>
      </div>
+
      </div>
 
-     <div>
-          EJS POP UP
+     <div id="search-popup" class="hidden absolute top-1/2 left-1/2">
+          <div class="bg-primary">EJS POPUP</div>
      </div>
 </body>
 

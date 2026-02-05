@@ -6,7 +6,16 @@ const currUserLat = Number($("#latitude")[0].innerHTML);
 const currUserLong = Number($("#longitude")[0].innerHTML);
 
 $(".nav-bar-opt").toggle(0);
+
+
 $("#search-button").on("click", async function(){
+    let tailwindClasses = 'z-20'
+    let mainContent = 'z-0 pointer-events-none'
+    $('#search-popup').removeClass('hidden').addClass(tailwindClasses);
+    $('#main-content').addClass(mainContent);
+});
+
+$("#search-submit").on("click", async function(){
     
     await $.ajax(
         {
@@ -27,6 +36,7 @@ $("#search-button").on("click", async function(){
     }
     )
 });
+
 $("#my-location").on("click", function(){
     youMarkerIcon.openPopup();
 
