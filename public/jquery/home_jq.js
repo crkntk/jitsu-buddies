@@ -10,9 +10,15 @@ $(".nav-bar-opt").toggle(0);
 
 $("#search-button").on("click", async function(){
     let tailwindClasses = 'z-20'
-    let mainContent = 'z-0 pointer-events-none'
+    let mainContent = 'z-0 pointer-events-none blur-sm'
     $('#search-popup').removeClass('hidden').addClass(tailwindClasses);
     $('#main-content').addClass(mainContent);
+});
+const value = document.querySelector("#dist-value");
+const input = document.querySelector("#dist_input");
+value.textContent = input.value;
+input.addEventListener("input", (event) => {
+  value.textContent = event.target.value;
 });
 
 $("#search-submit").on("click", async function(){

@@ -90,8 +90,14 @@
 
      </div>
 
-     <div id="search-popup" class="hidden absolute top-1/2 left-1/2">
-          <div class="bg-primary">EJS POPUP</div>
+     <div id="search-popup" class="hidden fixed top-1/8 left-1/7 right-1/8 p-0 m-0">
+          <div class="bg-gunmetal w-4xl h-96">
+               <h2>Search</h2>
+               <div>
+                    <input id="dist_input" type="range" min="0" max="100" step="1" class="accent-classic-crimson"/>
+                    <p>Distance(miles): <output id="dist-value"></output></p>
+               </div>
+          </div>
      </div>
 </body>
 
