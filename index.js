@@ -96,6 +96,7 @@ app.get('/users/:username/home', async (req, res) => {
         papKey: key,
         lat: user.latitude,
         lon: user.longitude,
+        userInfo: user,
         academyBelt: user.academy_belt,
         sunTzuQuote: get_sanTzuQuote(),
         loggedIn: true
@@ -225,7 +226,7 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
 passport.use(new Strategy( async function verify(username, password, cb){
 
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
-                    training_preferences, intensity_preferences, academy_belt,
+                    training_preferences, intensity_preferences, academy_belt, grappling_experience, striking_experience, profile_picture,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
     const values = [username] //Add the username param to our query for safe quering
@@ -241,6 +242,7 @@ passport.use(new Strategy( async function verify(username, password, cb){
     const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
     if(match){
     //render webpage with the papimap key and the location data if the hash passwords match
+    delete selectedUser.rows[0].pswd_hash;
     const user = selectedUser.rows[0]; //Get the information from our database query
     //Render our hompage with information retrieved from our database and a san tzue quote
     return cb(null, user);

@@ -91,12 +91,147 @@
      </div>
 
      <div id="search-popup" class="hidden fixed top-1/8 left-1/7 right-1/8 p-0 m-0 transition-transform delay-300 duration-1000 transform scale-10 -skew-12">
-          <div class="bg-gunmetal w-4xl h-96">
+          <div>
+          <div class="bg-gunmetal w-4xl h-96 text-xs">
                <h2>Search</h2>
+               <div class="text-platinum"> <%=JSON.stringify(userInfo) %> </div>
                <div>
                     <input id="dist_input" type="range" min="0" max="100" step="1" class="accent-classic-crimson"/>
                     <p>Distance(miles): <output id="dist-value"></output></p>
                </div>
+
+               <div class="form-outline mb-4 personal">
+            <select class="form-select form-select-sm" aria-label="Small select example" name="belt" id="belt">
+                <option selected>Choose Belt (optonal)</option>
+                <option value="white">White</option>
+                <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="brown">Brown</option>
+                <option value="black">Black</option>
+              </select>
+            <label class="form-label" for="belt">Belt</label>
+          </div>
+        <!-- wieght input -->
+        <div class="form-outline mb-4 personal">
+            <input type="text" name="weight" class="form-control" id="weight" />
+          <label class="form-label" for="weight">weight (optional)</label>
+        </div>
+        
+
+        <!-- Grappling Experience -->
+        <div class="m-3 training">
+            <h3 class="mb-1 col-7">Grappling Experience</h3> <p class="mt-1 col-7">This can be changed</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id ="expBJJ" value="BJJ">
+            <label class="form-check-label" for="expBJJ">Brazilian Jujitsu</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id="expWrestling" value="wrestling">
+            <label class="form-check-label" for="expWrestling">Wrestling</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id="expJudo" value="judo">
+            <label class="form-check-label" for="expJudo">Judo</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" value="nogi" id="expNoGi">
+            <label class="form-check-label" for="expNoGi">No Gi Grappling</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id="expCatch" value="catchWrestling">
+            <label class="form-check-label" for="expCatch">Catch Wrestling </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id="expSambo" value="sambo">
+            <label class="form-check-label" for="expSambo">Sambo</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="grapplingExp[]" id="expNoExp" value="noExp">
+            <label class="form-check-label" for="expSambo">No Experience</label>
+          </div>
+        </div>
+
+        <!-- Striking Experience -->
+        <div class="m-3 training">
+            <h3 class="mb-1 col-7">Sriking Experience</h3> <p class="mt-1 col-7">This can be changed</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id ="expBoxing" value="boxing">
+            <label class="form-check-label" for="expBoxing">Boxing</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id="expMuaythai" value="Muaythai">
+            <label class="form-check-label" for="expWrestling">Muay Thai</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id="expKickboxing" value="kickBoxing">
+            <label class="form-check-label" for="PrefFlowRoll">Kick Boxing</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" value="karate" id="expKarate">
+            <label class="form-check-label" for="expNoGi">Karate</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id="expKungfu" value="kungFU">
+            <label class="form-check-label" for="expKungfu">Kung Fu</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id="expMMA" value="mma">
+            <label class="form-check-label" for="expMMA">MMA</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="strikingExp[]" id="expNoexp" value="noExp">
+            <label class="form-check-label" for="expNoexp">No Experience</label>
+          </div>
+        </div>
+          <!-- Training Prefrences -->
+          <div class="m-3 training">
+            <h3 class="mb-1 col-7">Training Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id ="prefNewMoves" value="newMoves">
+            <label class="form-check-label" for="prefNewMoves">Drill New Moves</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefDrillSeq" value="drillSeq">
+            <label class="form-check-label" for="PrefDrillSeq">Drill Sequences</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefFlowRoll" value="flowRoll">
+            <label class="form-check-label" for="PrefFlowRoll">Flow Roll</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" value="sparr" id="PrefSparr">
+            <label class="form-check-label" for="PrefSparr">Sparr</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="trainingPref[]" id="PrefJujCoffee" value="jujCoffee">
+            <label class="form-check-label" for="PrefJujCoffee">Jujitsu Coffee </label>
+          </div>
+        </div>
+        <div class="m-3 training">
+            <h3 class="mb-1 col-7">Intensity Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault1" value="low">
+            <label class="form-check-label" for="flexRadioDefault1">
+              low
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault2" value="medium">
+            <label class="form-check-label" for="flexRadioDefault2">
+              medium
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault3" value="high">
+            <label class="form-check-label" for="flexRadioDefault3">
+              high
+            </label>
+          </div>
+        </div>
+
+
+
+          </div>
           </div>
      </div>
 </body>
