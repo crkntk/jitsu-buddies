@@ -91,13 +91,14 @@ $("#search-form").on("submit", async function(e){
         strikingExp: strikingExp,
         trainingPref: trainingPref
     }
-    console.log(data);
+    //console.log(data);
     await $.ajax(
         {
             url: "/searchPartners",
             data: {
                 latitude:currUserLat,
-                longitude:currUserLong
+                longitude:currUserLong,
+                data: data
             },
             success: function(data) {
                 console.log(data);

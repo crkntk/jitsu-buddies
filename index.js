@@ -69,12 +69,13 @@ app.get('/searchPartners', async (req, res) =>{
         and training prefrences
     */
     //Create query to find partners based on given distance and attributes still needs to change
+    console.log(req.query.data);
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio,
                     training_preferences, intensity_preferences, academy_belt,grappling_experience,striking_experience,
                     ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude FROM users
-                    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, 10000);`
-
-    const values = [req.query.latitude,req.query.longitude]; //Get values from our request parameter
+                    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography, $3);`
+    const distMeters = req.query.data.distance * 1609.32;
+    const values = [req.query.latitude,req.query.longitude,distMeters]; //Get values from our request parameter
     const usersFoundResp = await db.query(text, values);    //Query our database
     let searchPartners = safe_Conversion(usersFoundResp.rows); //This calls our safe conversion to convert values to variables asked for in front end
     //respond with the partners that were found given certain params
