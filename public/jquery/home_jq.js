@@ -102,9 +102,11 @@ $("#search-form").on("submit", async function(e){
             },
             success: function(data) {
                 console.log(data);
+                clearIconsMap();
                 for(let i=0; i<data.length; i++) {
                     putIconsMap(data[i]);
                 }
+                zoomToUsers();
                 $('#search-form').reset();
             },
             error: function(error) {
@@ -129,10 +131,24 @@ $(".class-arrow").on("click", function(){
         width:'toggle'
     });
 });
+var markerGroup = L.layerGroup();
+markerGroup.addTo(map);
 
+function clearIconsMap(){
+    markerGroup.clearLayers();
+};
 
+function zoomToUsers(){
+   const allLayers = L.featureGroup([markerGroup, youMarkerIcon]);
 
-
+  const bounds = allLayers.getBounds();
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+  } else {
+    // fallback if nothing is there
+    map.setView([currUserLat, currUserLong], 13);
+  
+}}
 
 function putIconsMap(user) {
     console.log(user);
@@ -150,7 +166,7 @@ function putIconsMap(user) {
     });
     
 
-    var markerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(map);
+    var markerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(markerGroup);
     var popup = L.popup({
     maxWidth: 200,
     minWidth: 100,
