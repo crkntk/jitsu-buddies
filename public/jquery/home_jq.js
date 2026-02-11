@@ -16,15 +16,31 @@ $("#search-button").on("click", async function(){
      $('#search-popup').addClass(transformPopup);
     $('#main-content').addClass(mainContent);
 });
+
+$("#close-search").on("click", async function(){
+    let tailwindClasses = 'z-0 hidden'
+    let transformPopup = 'scale-100 transform skew-0'
+    let mainContent = 'z-10 pointer-events-auto blur-none'
+    $('#search-popup').removeClass('hidden').addClass(tailwindClasses);
+     $('#search-popup').addClass(transformPopup);
+    $('#main-content').removeClass("blur-sm pointer-events-none").addClass(mainContent);
+});
+
 const value = document.querySelector("#dist-value");
 const input = document.querySelector("#dist_input");
 value.textContent = input.value;
+
 input.addEventListener("input", (event) => {
   value.textContent = event.target.value;
 });
 
-$("#search-submit").on("click", async function(){
-    
+$("#search-form").on("submit", async function(e){
+    e.preventDefault();
+    let grapplingExp = []
+    $('input[name="grapplingExp[]"]:checked').each(function() {
+        grapplingExp.push($(this).val());
+    });
+    console.log(grapplingExp);
     await $.ajax(
         {
             url: "/searchPartners",
@@ -43,6 +59,12 @@ $("#search-submit").on("click", async function(){
         }
     }
     )
+    let tailwindClasses = 'z-0 hidden'
+    let transformPopup = 'scale-100 transform skew-0'
+    let mainContent = 'z-10 pointer-events-auto blur-none'
+    $('#search-popup').removeClass('hidden').addClass(tailwindClasses);
+     $('#search-popup').addClass(transformPopup);
+    $('#main-content').removeClass("blur-sm pointer-events-none").addClass(mainContent);
 });
 
 $("#my-location").on("click", function(){

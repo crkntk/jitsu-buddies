@@ -90,33 +90,24 @@
 
      </div>
 
-     <div id="search-popup" class="hidden fixed top-1/8 left-1/7 right-1/8 p-0 m-0 transition-transform delay-300 duration-1000 transform scale-10 -skew-12">
+     <div id="search-popup" class="hidden absolute top-1/8 left-1/7 right-1/8 p-0 m-0 transition-transform delay-300 duration-1000 transform scale-10 -skew-12">
           <div>
-          <div class="bg-gunmetal w-4xl h-96 text-xs">
+          <div class="flex flex-column bg-gunmetal w-4xl h-fit text-xs text-platinum p-5">
+               <button type="button" class="btn btn-secondary self-end" id="close-search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"></path>
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
+               </svg>
+              </button>
                <h2>Search</h2>
                <div class="text-platinum"> <%=JSON.stringify(userInfo) %> </div>
+               <form action="" id="search-form">
                <div>
                     <input id="dist_input" type="range" min="0" max="100" step="1" class="accent-classic-crimson"/>
                     <p>Distance(miles): <output id="dist-value"></output></p>
                </div>
-
-               <div class="form-outline mb-4 personal">
-               <select class="form-select form-select-sm" aria-label="Small select example" name="belt" id="belt">
-                <option selected>Choose Belt (optonal)</option>
-                <option value="white">White</option>
-                <option value="blue">Blue</option>
-                <option value="purple">Purple</option>
-                <option value="brown">Brown</option>
-                <option value="black">Black</option>
-              </select>
-            <label class="form-label" for="belt">Belt</label>
-          </div>
         <!-- wieght input -->
-        <div class="form-outline mb-4 personal">
-            <input type="text" name="weight" class="form-control" id="weight" />
-          <label class="form-label" for="weight">weight (optional)</label>
-        </div>
-        
+  
 
         <!-- Grappling Experience -->
         <div class="m-3 training">
@@ -207,7 +198,7 @@
             <label class="form-check-label" for="PrefJujCoffee">Jujitsu Coffee </label>
           </div>
         </div>
-        
+
         <div class="m-3 training">
             <h3 class="mb-1 col-7">Intensity Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
         <div class="form-check">
@@ -229,7 +220,11 @@
             </label>
           </div>
         </div>
-
+        <div class="flex flex-row justify-between">
+          <button type="button" class=" search-item main-font w-2xl" style="background-color: black; width: 250px; height: 50px;">Update Preferences</button>
+          <button type="submit" class="search-item main-font " style="background-color: black; width: 250px; height: 50px;" >Find Partners</button>
+        </div>
+        </form>
 
 
           </div>
