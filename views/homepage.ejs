@@ -100,7 +100,7 @@
                </svg>
               </button>
                <h2>Search</h2>
-               <div class="text-platinum"> <%=JSON.stringify(userInfo) %> </div>
+               <!--<div class="text-platinum">  </div> -->
                <form action="" id="search-form">
                <div>
                     <input id="dist_input" type="range" min="0" max="100" step="1" class="accent-classic-crimson"/>
@@ -268,7 +268,8 @@
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-     <script id="initmap-script" type="module" src="/maps/homepage_map.js" papKey=<%=papKey%> belt=<%=academyBelt%> > </script>
-     <script id="home-jq" type="module" src="/jquery/home_jq.js" userInfo=<%=JSON.stringify(userInfo) %> > </script>
-
+<script id="home-jq" type="module" src="/jquery/home_jq.js" training_preferences="<%=userInfo.training_preferences  %>" intensity_preferences="<%=userInfo.intensity_preferences  %>" striking_experience="<%=userInfo.striking_experience  %>" grappling_experience="<%=userInfo.grappling_experience  %>" > </script>
+<script id="initmap-script" type="module" src="/maps/homepage_map.js" papKey=<%=papKey%> belt=<%=academyBelt%> > </script>
+     
+    
 </html>

@@ -35,14 +35,33 @@ input.addEventListener("input", (event) => {
 });
 
 //Set default values for search forms
-let userInfo = $('#home-jq').attr("userInfo");
-$('input[name="grapplingExp[]"]').each(function(checkBox) {
-        if(userInfo.grappling_experience.includes(checkBox.value)){
-            checkBox.checked = true;
-        }
+$(document).ready(function (){
+const el = document.querySelector('#home-jq');
+const grappling_experience =$('#home-jq').attr('grappling_experience');
+
+
+$('input[name="grapplingExp[]"]').each(function() {
+        this.checked = grappling_experience.includes(this.value);
+        
+    });
+const striking_experience =$('#home-jq').attr('striking_experience');
+$('input[name="strikingExp[]"]').each(function() {
+        this.checked = striking_experience.includes(this.value);
+        
+    });
+const training_preferences =$('#home-jq').attr('training_preferences');
+$('input[name="trainingPref[]"]').each(function() {
+        this.checked = training_preferences.includes(this.value);
+        
+    });
+const intensity_preferences =$('#home-jq').attr('intensity_preferences');
+
+$('input[name="Intensity"]').each(function() {
+        this.checked = intensity_preferences.includes(this.value);
         
     });
 
+});
 $("#search-form").on("submit", async function(e){
     e.preventDefault();
     let distance = document.querySelector("#dist_input").value;
