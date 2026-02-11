@@ -34,13 +34,45 @@ input.addEventListener("input", (event) => {
   value.textContent = event.target.value;
 });
 
+//Set default values for search forms
+let userInfo = $('#home-jq').attr("userInfo");
+$('input[name="grapplingExp[]"]').each(function(checkBox) {
+        if(userInfo.grappling_experience.includes(checkBox.value)){
+            checkBox.checked = true;
+        }
+        
+    });
+
 $("#search-form").on("submit", async function(e){
     e.preventDefault();
-    let grapplingExp = []
+    let distance = document.querySelector("#dist_input").value;
+    let beltFilter =[];
+    $('input[name="beltFilter[]"]:checked').each(function() {
+        beltFilter.push($(this).val());
+    });
+    let grapplingExp = [];
     $('input[name="grapplingExp[]"]:checked').each(function() {
         grapplingExp.push($(this).val());
     });
-    console.log(grapplingExp);
+    let strikingExp =[];
+    $('input[name="strikingExp[]"]:checked').each(function() {
+        strikingExp.push($(this).val());
+    });
+    let trainingPref =[];
+    $('input[name="trainingPref[]"]:checked').each(function() {
+        trainingPref.push($(this).val());
+    });
+    let intensity = $('input[name="Intensity"]:checked').val();
+    let data = {
+        latitude:currUserLat,
+        longitude:currUserLong,
+        distance: distance,
+        beltFilter: beltFilter,
+        grapplingExp: grapplingExp,
+        strikingExp: strikingExp,
+        trainingPref: trainingPref
+    }
+    console.log(data);
     await $.ajax(
         {
             url: "/searchPartners",
@@ -53,6 +85,7 @@ $("#search-form").on("submit", async function(e){
                 for(let i=0; i<data.length; i++) {
                     putIconsMap(data[i]);
                 }
+                $('#search-form').reset();
             },
             error: function(error) {
                 console.error("Error fetching USERS:", error)
