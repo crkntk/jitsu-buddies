@@ -89,7 +89,9 @@ $("#search-form").on("submit", async function(e){
         beltFilter: beltFilter,
         grapplingExp: grapplingExp,
         strikingExp: strikingExp,
-        trainingPref: trainingPref
+        trainingPref: trainingPref,
+        intensityPref: intensity,
+        beltFilter: beltFilter
     }
     //console.log(data);
     await $.ajax(
