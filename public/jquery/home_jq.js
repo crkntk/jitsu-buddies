@@ -102,7 +102,6 @@ $("#search-form").on("submit", async function(e){
                 data: data
             },
             success: async function(data) {
-                console.log(data);
                 clearIconsMap();
                 for(let i=0; i<data.length; i++) {
                     await putIconsMap(data[i]);
@@ -147,9 +146,6 @@ async function zoomToUsers(){
 
   await nextFrame();
   map.invalidateSize();
-  console.log("markers:", markerGroup.getLayers().length);
-console.log("bounds valid:", bounds.isValid(), bounds.toBBoxString());
-console.log("you:", youMarkerIcon.getLatLng());
 
   map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
 }
@@ -183,8 +179,7 @@ function putIconsMap(user) {
 
 function createPopupHTML(user) {
     let grapplingStyles = "";
-    let strikingStyles = ""
-    console.log(user);
+    let strikingStyles = "";
     for (var i = 0; i <user.striking_experience.length; i++){
         strikingStyles = strikingStyles + " " + user.striking_experience[i];
     }

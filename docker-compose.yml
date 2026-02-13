@@ -15,4 +15,4 @@ services:
       - .:/app                  # mount your code
       - /app/node_modules       # keep container's node_modules (don't overwrite with host)
     # If you want to override the dev command, uncomment:
-    # command: npm run dev
+    command: npm run dev

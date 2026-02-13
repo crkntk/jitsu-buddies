@@ -69,7 +69,6 @@ app.get('/searchPartners', async (req, res) =>{
         and training prefrences
     */
     //Create query to find partners based on given distance and attributes still needs to change
-    console.log(req.query.data);
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio,
        training_preferences, intensity_preferences, academy_belt, grappling_experience, striking_experience,
        ST_X(location::geometry) AS longitude,
@@ -236,6 +235,9 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     }
 
 });
+app.post('/user/update',upload.single('photo'), async (req, res) => {
+
+})
 
 passport.use(new Strategy( async function verify(username, password, cb){
 

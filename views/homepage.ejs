@@ -99,19 +99,19 @@
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
                </svg>
               </button>
-               <h2>Search</h2>
+               <h2 class="self-center">Search</h2>
                <!--<div class="text-platinum">  </div> -->
-               <form action="" id="search-form">
-               <div>
+               <form action="" id="search-form" class="border-2 p-4">
+               <div class="m-3 place-self-center">
                     <input id="dist_input" type="range" min="0" max="100" step="1" class="accent-classic-crimson"/>
-                    <p>Distance(miles): <output id="dist-value"></output></p>
+                    <p class="text-lg"> Distance(miles): <output id="dist-value"></output></p>
                </div>
         <!-- wieght input -->
                
 
         <!-- Belt Level Filter -->
-        <div class="m-3 training">
-            <h3 class="mb-1 col-7">Belt Level Filter</h3> <p class="mt-1 col-7"></p>
+        <div class="m-3 training place-self-center">
+            <h3 class="mb-1 place-self-center">Belt Level Filter</h3> <p class="mt-1 col-7"></p>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="beltFilter[]" id ="beltW" value="white">
             <label class="form-check-label" for="beltW">White</label>
@@ -139,8 +139,8 @@
         </div>
 
         <!-- Grappling Experience -->
-        <div class="m-3 training">
-            <h3 class="mb-1 col-7">Grappling Experience</h3> <p class="mt-1 col-7"></p>
+        <div class="m-3 training place-self-center">
+            <h3 class="mb-1 place-self-center">Grappling Experience</h3> <p class="mt-1 col-7"></p>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="grapplingExp[]" id ="expBJJ" value="BJJ">
             <label class="form-check-label" for="expBJJ">Brazilian Jujitsu</label>
@@ -172,8 +172,8 @@
         </div>
 
         <!-- Striking Experience -->
-        <div class="m-3 training">
-            <h3 class="mb-1 col-7">Sriking Experience</h3> <p class="mt-1 col-7"></p>
+        <div class="m-3 training place-self-center">
+            <h3 class="mb-1 place-self-center">Sriking Experience</h3> <p class="mt-1 col-7"></p>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="strikingExp[]" id ="expBoxing" value="boxing">
             <label class="form-check-label" for="expBoxing">Boxing</label>
@@ -204,8 +204,8 @@
           </div>
         </div>
           <!-- Training Prefrences -->
-          <div class="m-3 training">
-            <h3 class="mb-1 col-7">Training Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
+          <div class="m-3 training place-self-center">
+            <h3 class="mb-3 place-self-center">Training Preferences</h3>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="trainingPref[]" id ="prefNewMoves" value="newMoves">
             <label class="form-check-label" for="prefNewMoves">Drill New Moves</label>
@@ -229,7 +229,7 @@
         </div>
 
         <div class="m-3 training">
-            <h3 class="mb-1 col-7">Intensity Preferences</h3> <p class="mt-1 col-7">This can be changed</p>
+            <h3 class="mb-1 col-7">Intensity Preferences</h3>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="Intensity" id="flexRadioDefault1" value="low">
             <label class="form-check-label" for="flexRadioDefault1">
@@ -250,8 +250,8 @@
           </div>
         </div>
         <div class="flex flex-row justify-between">
-          <button type="button" class=" search-item main-font w-2xl" style="background-color: black; width: 250px; height: 50px;">Update Preferences</button>
-          <button type="submit" class="search-item main-font " style="background-color: black; width: 250px; height: 50px;" >Find Partners</button>
+          <button type="button" class=" search-item main-font w-2xl text-2xl" style="background-color: black; width: 250px; height: 50px; font-size: small;">Update Preferences</button>
+          <button type="submit" class="search-item main-font " style="background-color: black; width: 250px; height: 50px; font-size: small;" >Find Partners</button>
         </div>
         </form>
 
