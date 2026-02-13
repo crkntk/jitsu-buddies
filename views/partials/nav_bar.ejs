@@ -9,15 +9,18 @@
 <body>
 <div class="">
     <nav class="flex flex-row border-2 divide-x-3 divide-solid divide-indigo-500 text-sm text-platinum font-normal bg-carbon-black w-screen text-xl gap-0 outline-double outline-1 outline-offset-1 outline-gunmetal-500/50">
+    <a href="/" class=" cursor-pointer w-1 p-2 mx-8 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
+        Main
+    </a>   
         <% if(locals.loggedIn){      %>
-    <div class=" cursor-pointer w-1 p-2 mx-32 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
+    <a href="/users/<%=userInfo.user_name %>/home" class=" cursor-pointer w-1 p-2 mx-16 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
         Home
-    </div>
+    </a>
     <%}%>
-    <button class=" cursor-pointer w-1 p-2 mx-32 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
+    <button class=" cursor-pointer w-1 p-2 mx-8 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum transition duration-300 ease-in-out">
         Resources
     </button>
-    <div class="cursor-pointer w-1 p-2 mx-32 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum  transition duration-300 ease-in-out">
+    <div class="cursor-pointer w-1 p-2 mx-8 flex-2 text-center border-x-0 rounded-lg text-lg hover:text-classic-crimson active:bg-platinum  transition duration-300 ease-in-out">
         Help
     </div>
     <% if(!locals.loggedIn){      %>

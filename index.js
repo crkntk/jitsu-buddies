@@ -34,6 +34,7 @@ const db = new pg.Client({
     ca: fs.readFileSync("./certificates/db/ca.pem").toString(),
   }
 });
+const USERLIMIT = 10; //This is to limit the amount of users
 await db.connect(); //connect to database
 const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service maptiler API
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
@@ -124,7 +125,9 @@ app.get('/users/:username/home', async (req, res) => {
 
 app.get('/', async (req,res)=>{
     res.render("main_page.ejs",{
-        sunTzuQuote: get_sanTzuQuote()
+        sunTzuQuote: get_sanTzuQuote(),
+        loggedIn: req.user ? true : false,
+        userInfo: req.user
     });
 })
 
@@ -171,6 +174,13 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
         This enpiont is to create a new user with user information like address, triaining prefrences and other expereince
         provided my the front end. A photo from the user is also provided.
     */
+    
+    const limitQuery = await pool.query('SELECT COUNT(*) FROM users');
+    const count = parseInt(limitQuery.rows[0].count);
+    if(count > USERLIMIT){
+        res.redirect('/');
+    }
+
     let photoBuf = null, photoMime = null; //Buffor for out photo data information transfered
     if (req.file) {
       // validate and optimize We get the file and check what type of image it is
