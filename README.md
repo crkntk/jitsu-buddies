@@ -8,7 +8,9 @@ Postgres Database hosted in Aiven service
 Basic functionality works for going to the main page for general information creating users with prefrences for training. You can log in and when you click on
 search a modal form pops up so you can change the parameters by which to search for partners. The default parameters for search are the users preferences.
 Once partners are found the map zooms out to show all the user icons for the users found along with their belt colors. 
-User persistence is implemented using sessions in the back end and can be cleared by signing out.
+User persistence is implemented using sessions in the back end and can be cleared by signing out. 
+Main takes to to the main jitus buddies page and home takes you to your home page if you are logged in for the current session.
+The nav bar changes on wether the user is signed in or not.
 Any other functionality like updated preferences and setting meet ups among users is still a working progress. A chat feature for quests and meetups is also being
 implemented.
 
