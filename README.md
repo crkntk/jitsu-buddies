@@ -45,9 +45,10 @@ Playwrite scripts were added to automate the signing and population of database
 #TO RUN LOCALLY
 npm run dev
 
+#TO RUN USING DOCKER
 npx kill-port 3000
 docker compose build --no-cache
 docker compose up --force-recreate
 
 
-change
+
