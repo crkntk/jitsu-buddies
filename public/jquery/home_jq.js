@@ -90,8 +90,7 @@ $("#search-form").on("submit", async function(e){
         grapplingExp: grapplingExp,
         strikingExp: strikingExp,
         trainingPref: trainingPref,
-        intensityPref: intensity,
-        beltFilter: beltFilter
+        intensityPref: intensity
     }
     //console.log(data);
     await $.ajax(
@@ -102,14 +101,13 @@ $("#search-form").on("submit", async function(e){
                 longitude:currUserLong,
                 data: data
             },
-            success: function(data) {
+            success: async function(data) {
                 console.log(data);
                 clearIconsMap();
                 for(let i=0; i<data.length; i++) {
-                    putIconsMap(data[i]);
+                    await putIconsMap(data[i]);
                 }
-                zoomToUsers();
-                $('#search-form').reset();
+                await zoomToUsers();
             },
             error: function(error) {
                 console.error("Error fetching USERS:", error)
@@ -133,60 +131,55 @@ $(".class-arrow").on("click", function(){
         width:'toggle'
     });
 });
-var markerGroup = L.layerGroup();
+var markerGroup = L.featureGroup().addTo(map)
 markerGroup.addTo(map);
 
 function clearIconsMap(){
     markerGroup.clearLayers();
 };
 
-function zoomToUsers(){
-   const allLayers = L.featureGroup([markerGroup, youMarkerIcon]);
+const nextFrame = () => new Promise(requestAnimationFrame);
 
-  const bounds = allLayers.getBounds();
-  if (bounds.isValid()) {
-    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
-  } else {
-    // fallback if nothing is there
-    map.setView([currUserLat, currUserLong], 13);
-  
-}}
+async function zoomToUsers(){
+
+  const bounds = markerGroup.getBounds().extend(youMarkerIcon.getLatLng());
+  if (!bounds.isValid()) return;
+
+  await nextFrame();
+  map.invalidateSize();
+  console.log("markers:", markerGroup.getLayers().length);
+console.log("bounds valid:", bounds.isValid(), bounds.toBBoxString());
+console.log("you:", youMarkerIcon.getLatLng());
+
+  map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+}
 
 function putIconsMap(user) {
-    console.log(user);
-    let currUserLat = user.lat;
-    let curUserLong = user.lon;
-    const popContent = createPopupHTML(user);
-    console.log(popContent);
-    let sizeOfIcon = [20, 20];
-    if(user.academy_belt === "black"){
-        sizeOfIcon = [25,25]
-    }
-    var myIcon = L.icon({
-        iconUrl: "../../images/belts/" + user.belt + ".png",
-        iconSize: sizeOfIcon,
-    });
-    
+  const lat = Number(user.lat);
+  const lng = Number(user.lon); // or user.lng depending on your API
 
-    var markerIcon = L.marker([currUserLat, curUserLong], {icon: myIcon}).addTo(markerGroup);
-    var popup = L.popup({
-    maxWidth: 200,
-    minWidth: 100,
-    autoClose: false,
-    closeButton: true,
-    className: 'popup',
-    closeOnClick: false,
-    autoPan: true
-    })
-        .setLatLng([currUserLat, curUserLong])
-        .setContent(popContent)
-        popup.on("click", function (){
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    console.warn("Skipping user with invalid coords:", user);
+    return;
+  }
 
-            this.openOn(map);
+  const popContent = createPopupHTML(user);
 
-        });
-        markerIcon.bindPopup(popup);
+  let sizeOfIcon = [20, 20];
+  if (user.academy_belt === "black") sizeOfIcon = [25, 25];
+
+  const myIcon = L.icon({
+    iconUrl: "../../images/belts/" + user.belt + ".png",
+    iconSize: sizeOfIcon,
+  });
+
+  const markerIcon = L.marker([lat, lng], { icon: myIcon }).addTo(markerGroup);
+  markerIcon.bindPopup(L.popup({ maxWidth: 200, minWidth: 100, autoClose: false, closeButton: true, className: 'popup', closeOnClick: false, autoPan: true })
+    .setLatLng([lat, lng])
+    .setContent(popContent)
+  );
 }
+
 
 function createPopupHTML(user) {
     let grapplingStyles = "";
