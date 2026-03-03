@@ -15,6 +15,7 @@ import sharp from "sharp";
 import path from "path"
 import passport from "passport"
 import { Strategy } from 'passport-local'
+import { Server } from "socket.io";
 const saltRounds = 15 //Salt rounds for hashing password
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
 // Load environment variables from.env file
