@@ -15,7 +15,9 @@ import sharp from "sharp";
 import path from "path"
 import passport from "passport"
 import { Strategy } from 'passport-local'
-import { Server } from "socket.io";
+import { createServer } from "http"; //Http server for socket io usage so it wont create a new server and socket io is attached
+import { Server } from "socket.io"; //Http seerver for socket io
+
 const saltRounds = 15 //Salt rounds for hashing password
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
 // Load environment variables from.env file
@@ -40,6 +42,8 @@ await db.connect(); //connect to database
 const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service maptiler API
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
+const httpServer = createServer(app);
+const io = new Server(httpServer, { /* options */ });
 const port = 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
@@ -290,10 +294,12 @@ passport.deserializeUser( (user,cb)=>{
 });
 
 
-
-app.listen(port,'0.0.0.0', function() {
-    console.log(`Server is running on port ${port}`);
+io.on("connection", (socket) => {
+  // ...
 });
+
+
+httpServer.listen(3000);
 
 function safe_Conversion(usersArray){
     // TODO: implement safe conversion function for latitude and longitude
