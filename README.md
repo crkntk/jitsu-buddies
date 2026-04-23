@@ -52,3 +52,4 @@ docker compose up --force-recreate
 
 
 
+docker push creyes37/jitsu-buddies:latest
