@@ -101,6 +101,9 @@ body {
   grid-area: content;
   background-color:#EDEDED ;
  }
+ .friends-sect{
+  grid-area: friends;
+ }
  #main-content{
     display: grid;
       grid-gap: 5px;
@@ -108,10 +111,13 @@ body {
       grid-template-areas:
       "animation header header"
       "navbar navbar navbar"
-      "sidebar content content"
+      "sidebar content friends"
       "footer  footer  footer";
       background-color: #fff;
       color: #444;
+ }
+  .friends-sect{
+  grid-area: friends;
  }
  #navigation-bar{
   grid-area: navbar;

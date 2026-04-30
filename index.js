@@ -42,8 +42,8 @@ await db.connect(); //connect to database
 const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service maptiler API
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
-const httpServer = createServer(app);
-const io = new Server(httpServer, { /* options */ });
+const httpServer = createServer(app); // initialize http server
+const io = new Server(httpServer, { /* options */ }); //
 const port = 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
@@ -296,6 +296,7 @@ passport.deserializeUser( (user,cb)=>{
 
 io.on("connection", (socket) => {
   // ...
+  console.log(socket.id)
 });
 
 
