@@ -90,6 +90,11 @@
      </div>
      <div class="friends-sect ml-8 bg-amber-300">
       <h3>FRIENDS</h3>
+      <div>
+        <% friends.forEach( function(friend){ %>
+          <%- include('partials/friend.ejs',{friend: friend}); %>
+          <% }); %>
+      </div>
      </div>
      </div>
 

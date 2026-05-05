@@ -297,6 +297,10 @@ passport.deserializeUser( (user,cb)=>{
 io.on("connection", (socket) => {
   // ...
   console.log(socket.id)
+
+  socket.on("private_message",{
+
+  });
 });
 
 
