@@ -108,6 +108,7 @@ app.get('/users/:username/home', async (req, res) => {
    */
     //We construct a query to get the current user information from our database and their location for the map
     let user = req.user;
+    console.log(user);
     if(await req.isAuthenticated()){
     //render webpage with the papimap key and the location data if the hash passwords match
     //Render our hompage with information retrieved from our database and a san tzue quote
@@ -116,6 +117,7 @@ app.get('/users/:username/home', async (req, res) => {
         lat: user.latitude,
         lon: user.longitude,
         userInfo: user,
+        friends: user.friends,
         academyBelt: user.academy_belt,
         sunTzuQuote: get_sanTzuQuote(),
         loggedIn: true
@@ -258,7 +260,7 @@ passport.use(new Strategy( async function verify(username, password, cb){
 
      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt, grappling_experience, striking_experience, profile_picture,
-                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
+                    friends, ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
     const values = [username] //Add the username param to our query for safe quering
     const selectedUser = await db.query(text, values); //query database safely with values and query text
