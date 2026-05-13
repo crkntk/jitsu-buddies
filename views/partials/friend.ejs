@@ -13,8 +13,8 @@
 </body>
 <script>
     $('#' + "<%=friend %>").on("click", async function(){
-        let chatHtml = 
-        $('#chat-sect-id').append("<%-include('partials/chat_form.ejs',{friendInfo: "<%=friend %>"} %>"));
+        let chatHtml = "<h3> <%=friend %> <h3>"
+        $('#chat-sect-id').append(chatHtml);
     });
 </script>
 </html>
