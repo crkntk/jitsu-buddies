@@ -12,9 +12,12 @@
     </div>
 </body>
 <script>
+    
     $('#' + "<%=friend %>").on("click", async function(){
+        if(<% currChatObj.has(friend) %>){
         let chatHtml = "<h3> <%=friend %> <h3>"
         $('#chat-sect-id').append(chatHtml);
+        }
     });
 </script>
 </html>
