@@ -58,7 +58,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge:cookieMaxAge
+    maxAge: cookieMaxAge
   }
 }));
 
@@ -274,11 +274,12 @@ passport.use(new Strategy( async function verify(username, password, cb){
     const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
     const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
     if(match){
-    //render webpage with the papimap key and the location data if the hash passwords match
-    delete selectedUser.rows[0].pswd_hash;
-    const user = selectedUser.rows[0]; //Get the information from our database query
-    //Render our hompage with information retrieved from our database and a san tzue quote
-    return cb(null, user);
+        //render webpage with the papimap key and the location data if the hash passwords match
+        delete selectedUser.rows[0].pswd_hash;
+        const user = selectedUser.rows[0]; //Get the information from our database query
+        //Render our hompage with information retrieved from our database and a san tzue quote
+        user["chat"] = [];
+        return cb(null, user);
     }
     else{
         //If our password hashes dont match we redirect to the sign in page

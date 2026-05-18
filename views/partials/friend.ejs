@@ -6,17 +6,26 @@
     <title>Document</title>
 </head>
 <body>
-    <div id= <%= friend %> class="bg-carbon-black py-3 my-1 px-2 text-white" type="button">
+    <div id= <%= friend %>-list class="bg-carbon-black py-3 my-1 px-2 text-white" type="button">
         <%= friend %>
 
     </div>
 </body>
 <script>
     
-    $('#' + "<%=friend %>").on("click", async function(){
-        if(<% currChatObj.has(friend) %>){
-        let chatHtml = "<h3> <%=friend %> <h3>"
-        $('#chat-sect-id').append(chatHtml);
+    $('#' + "<%=friend %>-list").on("click", async function(){
+        var chat = $('#chat-sect-id [id]').map(function(){
+            return this.id;
+        }).get();
+        var friendStr = "<%=friend %>";
+        console.log(chat);
+        console.log(friendStr);
+        console.log(chat.includes(friendStr));
+        if(chat.includes(friendStr) == false){
+            let chatHtml = "<div id=<%=friend %> >
+                 <%=friend %> 
+                 </div>"
+            $('#chat-sect-id').append(chatHtml);
         }
     });
 </script>

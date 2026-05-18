@@ -93,7 +93,7 @@
       <h3>FRIENDS</h3>
       <div>
         <% friends.forEach( function(friend){ %>
-          <%- include('partials/friend.ejs',{friend: friend, currChatObj}); %>
+          <%- include('partials/friend.ejs',{friend: friend, currChatObj: JSON.stringify(userInfo.chat)}); %>
           <% }); %>
       </div>
      </div>
