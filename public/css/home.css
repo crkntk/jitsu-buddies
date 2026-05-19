@@ -123,6 +123,7 @@ body {
   position: fixed;
   bottom: 0;
   right:20% ;
+  left: 0%;
  }
  #navigation-bar{
   grid-area: navbar;

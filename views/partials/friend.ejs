@@ -22,9 +22,16 @@
         console.log(friendStr);
         console.log(chat.includes(friendStr));
         if(chat.includes(friendStr) == false){
-            let chatHtml = "<div id=<%=friend %> >
-                 <%=friend %> 
-                 </div>"
+            let chatHtml = `<div id=<%=friend %> class= "bg-white text-black w-64 mx-1 overflow-visible h-64"> 
+                <h5> <%=friend %></h5>
+                <form method="get">
+                    <label>
+                        Input
+                        <input name="submitted-name" autocomplete="name" />
+                    </label>
+                    <button>Send</button>
+                    </form>
+                </div>`;
             $('#chat-sect-id').append(chatHtml);
         }
     });
