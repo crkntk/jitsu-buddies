@@ -17,6 +17,7 @@ import passport from "passport"
 import { Strategy } from 'passport-local'
 import { createServer } from "http"; //Http server for socket io usage so it wont create a new server and socket io is attached
 import { Server } from "socket.io"; //Http seerver for socket io
+import { createClient } from 'redis'; //Import Redis client object
 
 const saltRounds = 15 //Salt rounds for hashing password
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
@@ -49,6 +50,13 @@ const port = 3000; //We run on port
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 const cookieMaxAge = 1000 * 60*60;
+//Our redis client object initialization
+const RediClient = createClient();
+client.on('error', err => console.log('Redis Client Error', err));
+await client.connect(); //connect to redis client on port 6379 locally. Use docker on windows
+
+
+
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 
