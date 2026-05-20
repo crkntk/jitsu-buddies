@@ -302,6 +302,7 @@ io.use((socket, next) => {
     return next(new Error("invalid username"));
   }
   socket.username = username;
+  console.log(username);
   next();
 });
 
