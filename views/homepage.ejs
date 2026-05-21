@@ -17,7 +17,7 @@
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
      <script src="/socket.io/socket.io.js"></script>
-     <script id="socket-script" username="<%=userInfo.user_name %>" type="module" src='/socket/socket.js'></script>
+     <script id="socket-script" username="<%=userInfo.user_name %>" friends=<%=userInfo.friends %>  type="module" src='/socket/socket.js'></script>
 </head>
 <!-- color pallet https://colorhunt.co/palette/171717444444da0037ededed colors: black 171717, grey 444444, red DA0037, light grey EDEDED -->
 <body>

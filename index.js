@@ -51,9 +51,9 @@ const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 const cookieMaxAge = 1000 * 60*60;
 //Our redis client object initialization
-const RediClient = createClient();
-client.on('error', err => console.log('Redis Client Error', err));
-await client.connect(); //connect to redis client on port 6379 locally. Use docker on windows
+const RedisClient = createClient();
+RedisClient.on('error', err => console.log('Redis Client Error', err));
+await RedisClient.connect(); //connect to redis client on port 6379 locally. Use docker on windows
 
 
 
@@ -305,7 +305,15 @@ passport.deserializeUser( (user,cb)=>{
 });
 
 io.use((socket, next) => {
-  const username = socket.handshake.auth.username;
+  const username = socket.handshake.auth.username;//get connection username
+  const friends = socket.handshake.query.friends; //friends of connection
+  const redUserKey = 'users:' + username;
+  RedisClient.hSet(redUserKey,{
+    socketId: socket.id,
+    username:username,
+    friends: friends
+
+});
   if (!username) {
     return next(new Error("invalid username"));
   }

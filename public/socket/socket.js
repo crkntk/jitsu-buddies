@@ -4,8 +4,10 @@ const URL = "http://localhost:3000";
 const scriptTag = document.getElementById("socket-script");
 //console.log(scriptTag);
 const username = scriptTag.getAttribute("username");
-console.log(username);
-const socket = io(URL, { autoConnect: false });
+const friends = scriptTag.getAttribute("friends");
+console.log(friends);
+const socket = io(URL, { autoConnect: false, query: {friends:friends} }
+);
 socket.auth = { username };
 socket.connect();
 socket.onAny((event, ...args) => {
