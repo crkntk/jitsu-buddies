@@ -306,7 +306,8 @@ passport.deserializeUser( (user,cb)=>{
 
 io.use((socket, next) => {
   const username = socket.handshake.auth.username;//get connection username
-  const friends = socket.handshake.query.friends; //friends of connection
+  const friends = Array.from(socket.handshake.query.friends); //friends of connection
+
   const redUserKey = 'users:' + username;
   RedisClient.hSet(redUserKey,{
     socketId: socket.id,
