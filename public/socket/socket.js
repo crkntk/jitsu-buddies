@@ -14,4 +14,8 @@ socket.onAny((event, ...args) => {
   console.log(event, args);
 });
 
+socket.on('user:connected-friends', (friends)=> {
+  console.log(friends);
+});
+
 export default socket;

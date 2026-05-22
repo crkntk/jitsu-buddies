@@ -306,8 +306,7 @@ passport.deserializeUser( (user,cb)=>{
 
 io.use((socket, next) => {
   const username = socket.handshake.auth.username;//get connection username
-  const friends = Array.from(socket.handshake.query.friends); //friends of connection
-
+  const friends = socket.handshake.query.friends.split(','); //friends of connection
   const redUserKey = 'users:' + username;
   RedisClient.hSet(redUserKey,{
     socketId: socket.id,
@@ -319,12 +318,19 @@ io.use((socket, next) => {
     return next(new Error("invalid username"));
   }
   socket.username = username;
-  console.log(username);
+  socket.friends = friends;
   next();
 });
 
 io.on("connection", (socket) => {
   // ...
+ const connFriends = socket.friends.filter((friend) =>{
+    const usersQuery = 'users:' + friend;
+    console.log(usersQuery);
+    return RedisClient.get(usersQuery);
+ });
+ console.log(`connected friends $(connFriends)`);
+ socket.emit("user:connected-friends",connFriends);
   console.log(socket.id);
 
   
