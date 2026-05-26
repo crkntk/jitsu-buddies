@@ -15,6 +15,7 @@ socket.onAny((event, ...args) => {
 });
 
 socket.on('user:connected-friends', (friends)=> {
+  console.log('hit connected friends event')
   console.log(friends);
 });
 

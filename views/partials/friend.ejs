@@ -7,7 +7,14 @@
 </head>
 <body>
     <div id= <%= friend %>-list class="bg-carbon-black py-3 my-1 px-2 text-white" type="button">
-        <%= friend %>
+        <div><%= friend %> </div>
+        <div> 
+        <% if( connected){ %>
+        <svg src="images/homepage/circle.svg"> </svg>
+        <% }else {%>
+            <svg src="images/homepage/circle.svg"> </svg>
+            <% }%>
+        </div>
 
     </div>
 </body>
