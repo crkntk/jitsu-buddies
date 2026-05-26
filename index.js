@@ -53,7 +53,10 @@ const cookieMaxAge = 1000 * 60*60;
 //Our redis client object initialization
 const RedisClient = createClient();
 RedisClient.on('error', err => console.log('Redis Client Error', err));
-await RedisClient.connect(); //connect to redis client on port 6379 locally. Use docker on windows
+async function redis_start(){
+    await RedisClient.connect(); //connect to redis client on port 6379 locally. Use docker on windows
+};
+redis_start();
 
 
 
@@ -128,7 +131,7 @@ app.get('/users/:username/home', async (req, res) => {
         friends: user.friends,
         academyBelt: user.academy_belt,
         sunTzuQuote: get_sanTzuQuote(),
-        loggedIn: true
+        loggedIn: true //need to delete this dont need it in the front end. ITS USLESS!!!!
         });
     }
     else{
@@ -323,13 +326,18 @@ io.use(async (socket, next) => {
 
 io.on("connection", async (socket) => {
   // ...
- const connFriends = socket.friends.filter(async (friend) =>{
+  let connFriends = socket.friends;
+ connFriends = await Promise.all(connFriends.map(async (friend) =>{
     const usersQuery = 'users:' + friend;
-    console.log(usersQuery);
-    return await RedisClient.get(usersQuery);
- });
+    let friendQuery = await  RedisClient.hGet(usersQuery,'username');
+    console.log(friendQuery);
+    return friendQuery;
+ }));
+ connFriends = connFriends.filter((friend)=> {
+    return friend != null;
+ })
  const output = `connected friends ${connFriends}`;
- 
+ console.log(connFriends);
  socket.emit("user:connected-friends",connFriends);
   console.log(socket.id);
 
