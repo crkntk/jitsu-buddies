@@ -6,16 +6,11 @@
     <title>Document</title>
 </head>
 <body>
-    <div id= <%= friend %>-list class="bg-carbon-black py-3 my-1 px-2 text-white" type="button">
+    <div id=<%=friend %>-list class="flex flex-row bg-carbon-black py-3 my-1 px-2 text-white" type="button">
         <div><%= friend %> </div>
-        <div class="bg-white"> 
-        <% if( connected){ %>
-        <svg src="images/homepage/circle.svg"> </svg>
-        <% }else {%>
-            <svg src="images/homepage/circle.svg"> </svg>
-            <% }%>
+        <div id=<%=friend %>-icon class="bg-gray-400 w-[12px] h-[12px] rounded-4xl m-1.5 mx-3"> 
         </div>
-
+        <div>: Offline</div>
     </div>
 </body>
 <script>
