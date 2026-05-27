@@ -15,9 +15,6 @@
     --color-black: #000;
     --color-white: #ffffffff;
     --spacing: 0.25rem;
-    --container-3xs: 16rem;
-    --container-xs: 20rem;
-    --container-sm: 24rem;
     --container-2xl: 42rem;
     --container-4xl: 56rem;
     --text-xs: 0.75rem;
@@ -39,7 +36,6 @@
     --font-weight-bold: 700;
     --tracking-widest: 0.1em;
     --radius-lg: 0.5rem;
-    --radius-3xl: 1.5rem;
     --radius-4xl: 2rem;
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --animate-bounce: bounce 1s infinite;

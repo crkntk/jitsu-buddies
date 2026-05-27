@@ -326,26 +326,36 @@ io.use(async (socket, next) => {
 
 io.on("connection", async (socket) => {
   // ...
-  let connFriends = socket.friends;
- connFriends = await Promise.all(connFriends.map(async (friend) =>{
-    const usersQuery = 'users:' + friend;
-    console.log(JSON.stringify(usersQuery));
-    let friendQuery = await  RedisClient.hGet(usersQuery,'username');
-    console.log(`This is friend query ${friendQuery}`);
-    return friendQuery;
- }));
+  let connFriends = await getConnFriends(socket);
  console.log(connFriends);
- connFriends = connFriends.filter((friend)=> {
-    return friend != null;
- })
  const output = `connected friends ${connFriends}`;
  console.log(connFriends);
  socket.emit("user:connected-friends",connFriends);
-  console.log(socket.id);
+ console.log(socket.id);
+  socket.on("disconnect", async (reason) => {
+    // ...
+    connFriends = await getConnFriends(socket);
+    
+  });
 
   
 });
 
+async function getConnFriends(socket){
+    let connFriends = socket.friends;
+    console.log(`This user disconnected: ${socket.username}`);
+    connFriends = await Promise.all(connFriends.map(async (friend) =>{
+        const usersQuery = 'users:' + friend;
+        console.log(JSON.stringify(usersQuery));
+        let friendQuery = await  RedisClient.hGet(usersQuery,'username');
+        console.log(`This is friend query ${friendQuery}`);
+        return friendQuery;
+        }));
+    connFriends = connFriends.filter((friend)=> {
+        return friend != null;
+        });
+    return connFriends;
+}
 
 httpServer.listen(3000);
 
