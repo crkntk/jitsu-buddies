@@ -329,10 +329,12 @@ io.on("connection", async (socket) => {
   let connFriends = socket.friends;
  connFriends = await Promise.all(connFriends.map(async (friend) =>{
     const usersQuery = 'users:' + friend;
+    console.log(JSON.stringify(usersQuery));
     let friendQuery = await  RedisClient.hGet(usersQuery,'username');
-    console.log(friendQuery);
+    console.log(`This is friend query ${friendQuery}`);
     return friendQuery;
  }));
+ console.log(connFriends);
  connFriends = connFriends.filter((friend)=> {
     return friend != null;
  })

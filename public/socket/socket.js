@@ -17,6 +17,11 @@ socket.onAny((event, ...args) => {
 socket.on('user:connected-friends', (friends)=> {
   console.log('hit connected friends event')
   console.log(friends);
+  friends.forEach(friend => {
+    $("#" + friend + "-icon").removeClass("bg-gray-400");
+    $("#" + friend + "-icon").addClass("bg-green-500");
+    $("#" + friend + "-text").text("Online");
+  });
 });
 
 export default socket;
