@@ -332,20 +332,32 @@ io.use(async (socket, next) => {
 
 io.on("connection", async (socket) => {
   // ...
+  if(socket.recovered){
+    console.log("state recovered: ");
+    console.log(socket.id);
+  }
   let connFriends = await getConnFriends(socket);
  //console.log(connFriends);
  connFriends = connFriends.map((socketFriend)=>{
     return socketFriend.username;
  });
  console.log(connFriends);
+ if(socket.recovered === false){
  socket.emit("user:connected-friends",connFriends);
+ }
  console.log(socket.id);
   socket.on("disconnect", async (reason) => {
     // ...
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const foundSocket = await io.in(socket.id).fetchSockets();
+    console.log("found socket");
+    console.log(foundSocket);
+    if(foundSocket.length ==0){
     let friendsSockObj = await getConnFriends(socket);
     friendsSockObj.forEach(friendObj => {
         socket.to(friendObj.socketId).emit("user:friend-disconnect",socket.username);
     });
+}
     
   });
 
