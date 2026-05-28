@@ -44,7 +44,13 @@ const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
 const httpServer = createServer(app); // initialize http server
-const io = new Server(httpServer, { /* options */ }); //
+const io = new Server(httpServer, {
+    connectionStateRecovery: {
+        // the backup duration of the sessions and the packets
+        maxDisconnectionDuration: 2 * 60 * 1000,
+        // whether to skip middlewares upon successful recovery
+        skipMiddlewares: true,
+  }}); //
 const port = 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
@@ -327,14 +333,19 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
   // ...
   let connFriends = await getConnFriends(socket);
- console.log(connFriends);
- const output = `connected friends ${connFriends}`;
+ //console.log(connFriends);
+ connFriends = connFriends.map((socketFriend)=>{
+    return socketFriend.username;
+ });
  console.log(connFriends);
  socket.emit("user:connected-friends",connFriends);
  console.log(socket.id);
   socket.on("disconnect", async (reason) => {
     // ...
-    connFriends = await getConnFriends(socket);
+    let friendsSockObj = await getConnFriends(socket);
+    friendsSockObj.forEach(friendObj => {
+        socket.to(friendObj.socketId).emit("user:friend-disconnect",socket.username);
+    });
     
   });
 
@@ -347,12 +358,12 @@ async function getConnFriends(socket){
     connFriends = await Promise.all(connFriends.map(async (friend) =>{
         const usersQuery = 'users:' + friend;
         console.log(JSON.stringify(usersQuery));
-        let friendQuery = await  RedisClient.hGet(usersQuery,'username');
-        console.log(`This is friend query ${friendQuery}`);
+        let friendQuery = await  RedisClient.hGetAll(usersQuery);
+        console.log(`This is friend query ${friendQuery.username}`);
         return friendQuery;
         }));
     connFriends = connFriends.filter((friend)=> {
-        return friend != null;
+        return Object.keys(friend).length !== 0;
         });
     return connFriends;
 }

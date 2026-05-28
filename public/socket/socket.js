@@ -24,4 +24,10 @@ socket.on('user:connected-friends', (friends)=> {
   });
 });
 
+socket.on("user:friend-disconnect",(friend)=>{
+  $("#" + friend + "-icon").removeClass("bg-green-500");
+  $("#" + friend + "-icon").addClass("bg-gray-400");
+  $("#" + friend + "-text").text("Ofline");
+});
+
 export default socket;
