@@ -30,4 +30,9 @@ socket.on("user:friend-disconnect",(friend)=>{
   $("#" + friend + "-text").text("Ofline");
 });
 
+socket.on("user:friend-connected",(friend) =>{
+    $("#" + friend + "-icon").removeClass("bg-gray-400");
+    $("#" + friend + "-icon").addClass("bg-green-500");
+    $("#" + friend + "-text").text("Online");
+})
 export default socket;

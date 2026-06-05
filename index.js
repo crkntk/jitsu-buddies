@@ -44,6 +44,7 @@ const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
 const httpServer = createServer(app); // initialize http server
+
 const io = new Server(httpServer, {
     connectionStateRecovery: {
         // the backup duration of the sessions and the packets
@@ -69,15 +70,15 @@ redis_start();
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-app.use(session({
+const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
   resave: false,
   saveUninitialized: true,
   cookie: {
     maxAge: cookieMaxAge
   }
-}));
+});
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -125,7 +126,7 @@ app.get('/users/:username/home', async (req, res) => {
    */
     //We construct a query to get the current user information from our database and their location for the map
     let user = req.user;
-    console.log(user);
+    //console.log(user);
     if(await req.isAuthenticated()){
     //render webpage with the papimap key and the location data if the hash passwords match
     //Render our hompage with information retrieved from our database and a san tzue quote
@@ -317,6 +318,8 @@ io.use(async (socket, next) => {
   const username = socket.handshake.auth.username;//get connection username
   const friends = socket.handshake.query.friends.split(','); //friends of connection
   const redUserKey = 'users:' + username;
+  console.log("user connected for session: ");
+  console.log(socket.id);
   await RedisClient.hSet(redUserKey,{
     socketId: socket.id,
     username: username,
@@ -329,6 +332,29 @@ io.use(async (socket, next) => {
   socket.friends = friends;
   next();
 });
+function onlyForHandshake(middleware) {
+  return (req, res, next) => {
+    const isHandshake = req._query.sid === undefined;
+    if (isHandshake) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
+}
+
+io.engine.use(onlyForHandshake(sessionMiddleware));
+io.engine.use(onlyForHandshake(passport.session()));
+io.engine.use(
+  onlyForHandshake((req, res, next) => {
+    if (req.user) {
+      next();
+    } else {
+      res.writeHead(401);
+      res.end();
+    }
+  }),
+);
 
 io.on("connection", async (socket) => {
   // ...
@@ -336,26 +362,32 @@ io.on("connection", async (socket) => {
     console.log("state recovered: ");
     console.log(socket.id);
   }
+  socket.join(`user:${socket.request.user.user_name}`);
   let connFriends = await getConnFriends(socket);
  //console.log(connFriends);
  connFriends = connFriends.map((socketFriend)=>{
     return socketFriend.username;
  });
- console.log(connFriends);
+ connFriends.forEach((friend) => {
+    io.in(`user:${friend}`).emit("user:friend-connected",friend);
+ })
+ //console.log(connFriends);
  if(socket.recovered === false){
  socket.emit("user:connected-friends",connFriends);
  }
- console.log(socket.id);
+ //console.log(socket.id);
   socket.on("disconnect", async (reason) => {
     // ...
+    await io.in(`user:${socket.request.user.user_name}`).socketsLeave(`user:${socket.request.user.user_name}`);
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    const foundSocket = await io.in(socket.id).fetchSockets();
-    console.log("found socket");
+    const foundSocket = await io.in(`user:${socket.request.user.user_name}`).fetchSockets();
+    console.log(`current disconnect socket id: ${socket.id}`)
+    console.log("found socket on disconnect: ");
     console.log(foundSocket);
-    if(foundSocket.length ==0){
+    if(foundSocket.length == 0){
     let friendsSockObj = await getConnFriends(socket);
     friendsSockObj.forEach(friendObj => {
-        socket.to(friendObj.socketId).emit("user:friend-disconnect",socket.username);
+        socket.to(`user:${socket.request.user.user_name}`).emit("user:friend-disconnect",socket.username);
     });
 }
     
@@ -366,15 +398,15 @@ io.on("connection", async (socket) => {
 
 async function getConnFriends(socket){
     let connFriends = socket.friends;
-    console.log(`This user disconnected: ${socket.username}`);
+    //console.log(`This user disconnected: ${socket.username}`);
     connFriends = await Promise.all(connFriends.map(async (friend) =>{
         const usersQuery = 'users:' + friend;
-        console.log(JSON.stringify(usersQuery));
+        //console.log(JSON.stringify(usersQuery));
         let friendQuery = await  RedisClient.hGetAll(usersQuery);
-        console.log(`This is friend query ${friendQuery.username}`);
+        //console.log(`This is friend query ${friendQuery.username}`);
         return friendQuery;
         }));
-    connFriends = connFriends.filter((friend)=> {
+    connFriends = connFriends.filter((friend) => {
         return Object.keys(friend).length !== 0;
         });
     return connFriends;
