@@ -364,12 +364,13 @@ io.on("connection", async (socket) => {
   }
   socket.join(`user:${socket.request.user.user_name}`);
   let connFriends = await getConnFriends(socket);
- //console.log(connFriends);
+  console.log("Connected Friends");
+ console.log(connFriends);
  connFriends = connFriends.map((socketFriend)=>{
     return socketFriend.username;
  });
  connFriends.forEach((friend) => {
-    io.in(`user:${friend}`).emit("user:friend-connected",friend);
+    io.in(`user:${friend}`).emit("user:friend-connected",socket.username);
  })
  //console.log(connFriends);
  if(socket.recovered === false){
@@ -385,10 +386,15 @@ io.on("connection", async (socket) => {
     console.log("found socket on disconnect: ");
     console.log(foundSocket);
     if(foundSocket.length == 0){
-    let friendsSockObj = await getConnFriends(socket);
-    friendsSockObj.forEach(friendObj => {
-        socket.to(`user:${socket.request.user.user_name}`).emit("user:friend-disconnect",socket.username);
-    });
+        let friendsSockObj = await getConnFriends(socket);
+        friendsSockObj.forEach(friendObj => {
+        console.log(friendObj);
+        socket.to(`user:${friendObj.username}`).emit("user:friend-disconnect",socket.username);
+            });
+        
+        const username = socket.handshake.auth.username;//get connection username
+        const redUserKey = 'users:' + username;
+        await RedisClient.del([redUserKey]);
 }
     
   });
