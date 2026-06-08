@@ -24,17 +24,31 @@
         console.log(friendStr);
         console.log(chat.includes(friendStr));
         if(chat.includes(friendStr) == false){
-            let chatHtml = `<div id=<%=friend %> class= "bg-white text-black w-64 mx-1 overflow-visible h-64"> 
+            let chatHtml = `<div id=<%=friend %> class= "bg-white text-black w-64 mx-1 overflow-visible h-64 border-1"> 
                 <h5> <%=friend %></h5>
-                <form method="get">
-                    <label>
-                        Input
-                        <input name="submitted-name" autocomplete="name" />
-                    </label>
-                    <button>Send</button>
+                <div id=<%=friend %>-chat class="w-62 h-48 border-1">
+
+                </div>
+                <form method="get" class="flex flex-row w-64">
+                    <div>
+                    <input id=id=<%=friend %>-input class="border-1" name="submitted-name" autocomplete="name" />
+                    </div>
+                    <div class="justify-self-end">
+                    <button class="w-16 border-2 mx-1 ">Send</button>
+                    </div>
                     </form>
                 </div>`;
             $('#chat-sect-id').append(chatHtml);
+            
+            var chatForm = document.getElementById(friendStr);
+            var input = document.getElementById(friendStr+'-input');
+            form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      input.value = '';
+    }
+  });
         }
     });
 </script>

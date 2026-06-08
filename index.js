@@ -364,8 +364,6 @@ io.on("connection", async (socket) => {
   }
   socket.join(`user:${socket.request.user.user_name}`);
   let connFriends = await getConnFriends(socket);
-  console.log("Connected Friends");
- console.log(connFriends);
  connFriends = connFriends.map((socketFriend)=>{
     return socketFriend.username;
  });
@@ -382,9 +380,6 @@ io.on("connection", async (socket) => {
     await io.in(`user:${socket.request.user.user_name}`).socketsLeave(`user:${socket.request.user.user_name}`);
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const foundSocket = await io.in(`user:${socket.request.user.user_name}`).fetchSockets();
-    console.log(`current disconnect socket id: ${socket.id}`)
-    console.log("found socket on disconnect: ");
-    console.log(foundSocket);
     if(foundSocket.length == 0){
         let friendsSockObj = await getConnFriends(socket);
         friendsSockObj.forEach(friendObj => {
