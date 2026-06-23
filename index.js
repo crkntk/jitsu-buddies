@@ -57,9 +57,11 @@ const port = 3000; //We run on port
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 const cookieMaxAge = 1000 * 60*60;
+
 //Our redis client object initialization
 const RedisClient = createClient();
-RedisClient.on('error', err => console.log('Redis Client Error', err));
+RedisClient.on('error', err => console.log('Redis Client Error', err)); //Check if theres an error on client creation
+//Start redis connection
 async function redis_start(){
     await RedisClient.connect(); //connect to redis client on port 6379 locally. Use docker on windows
 };
@@ -70,14 +72,16 @@ redis_start();
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//Start middle ware session for session persistence
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: cookieMaxAge
+    maxAge: cookieMaxAge //Cookie saving time
   }
 });
+//Use session middleware
 app.use(sessionMiddleware);
 
 app.use(passport.initialize());
@@ -306,6 +310,7 @@ passport.use(new Strategy( async function verify(username, password, cb){
 
 }));
 
+//Serialize user for session using passport and deserialization functions
 passport.serializeUser( (user,cb)=>{
     cb(null, user);
 });
@@ -313,25 +318,27 @@ passport.serializeUser( (user,cb)=>{
 passport.deserializeUser( (user,cb)=>{
     cb(null, user);
 });
-
+//Middle ware for socket io and setting the user data on redis database
 io.use(async (socket, next) => {
-  const username = socket.handshake.auth.username;//get connection username
+  //Error if username was not provided
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
+  const username = socket.handshake.auth.username; //get connection username
   const friends = socket.handshake.query.friends.split(','); //friends of connection
-  const redUserKey = 'users:' + username;
-  console.log("user connected for session: ");
-  console.log(socket.id);
+  const redUserKey = 'users:' + username; //Create user redis query
+  //Hashset the user witht the query key and the users data needed to find friends and data
   await RedisClient.hSet(redUserKey,{
     socketId: socket.id,
     username: username,
     friends: JSON.stringify(friends)
 });
-  if (!username) {
-    return next(new Error("invalid username"));
-  }
-  socket.username = username;
-  socket.friends = friends;
+
+  socket.username = username; //Attach username to current socket
+  socket.friends = friends;   //Attach friends to socket for fast retrieval
   next();
 });
+//Check that middleware is only used for hanshake
 function onlyForHandshake(middleware) {
   return (req, res, next) => {
     const isHandshake = req._query.sid === undefined;
@@ -343,8 +350,9 @@ function onlyForHandshake(middleware) {
   };
 }
 
-io.engine.use(onlyForHandshake(sessionMiddleware));
-io.engine.use(onlyForHandshake(passport.session()));
+io.engine.use(onlyForHandshake(sessionMiddleware)); //Override engine behavior on initial hanshake with function
+io.engine.use(onlyForHandshake(passport.session())); //Use passport session to use and attach the session to the socket
+//Call back for only for hanshake call
 io.engine.use(
   onlyForHandshake((req, res, next) => {
     if (req.user) {
@@ -357,16 +365,21 @@ io.engine.use(
 );
 
 io.on("connection", async (socket) => {
-  // ...
+  //On connection event for socket
   if(socket.recovered){
+    //Check if we are in recovery mode for the session
     console.log("state recovered: ");
     console.log(socket.id);
   }
+  //Create room attached with user and username data to identify socket to username relationship
+  //If this is a new session this will create a new room if a session already is duplicate then the session will join the room
   socket.join(`user:${socket.request.user.user_name}`);
-  let connFriends = await getConnFriends(socket);
+  let connFriends = await getConnFriends(socket);   //Get currently connected friends using the current socket attached with user information
+  //We only need the connected friend's username
  connFriends = connFriends.map((socketFriend)=>{
     return socketFriend.username;
  });
+ //For each of our connnected friends we emmit that we are connected
  connFriends.forEach((friend) => {
     io.in(`user:${friend}`).emit("user:friend-connected",socket.username);
  })
@@ -375,7 +388,21 @@ io.on("connection", async (socket) => {
  socket.emit("user:connected-friends",connFriends);
  }
  //console.log(socket.id);
-  socket.on("disconnect", async (reason) => {
+ socket.on("message", (data) => {
+    let connFriends = await getConnFriends(socket);
+    connFriends = connFriends.map((socketFriend)=>{
+        return socketFriend.username;
+    });
+    if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
+
+    }
+    else{
+    //If friend is not connected send message to inbox or cache it to send later
+
+    }
+
+ });
+    socket.on("disconnect", async (reason) => {
     // ...
     await io.in(`user:${socket.request.user.user_name}`).socketsLeave(`user:${socket.request.user.user_name}`);
     await new Promise((resolve) => setTimeout(resolve, 5000));
