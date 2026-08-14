@@ -3,6 +3,7 @@ services:
     build:
       context: .
       target: dev               # uses the "dev" stage from your Dockerfile
+    image: creyes37/jitsu-buddies:latest
     container_name: express-api
     ports:
       - "3000:3000"
