@@ -161,7 +161,7 @@
             chatForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const payload = {
-                    recipientUsername: friendStr,
+                    recipient: friendStr,
                     message: input.value,
                     timestamp: Date.now()
                 };
