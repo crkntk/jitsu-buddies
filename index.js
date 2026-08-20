@@ -38,8 +38,9 @@ const db = new pg.Client({
     ca: fs.readFileSync("./certificates/db/ca.pem").toString(),
   }
 });
-const USERLIMIT = 10; //This is to limit the amount of users
+const USERLIMIT = 20; //This is to limit the amount of users
 await db.connect(); //connect to database
+console.log("server connected to db.")
 const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service maptiler API
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
@@ -113,8 +114,9 @@ app.get('/searchPartners', async (req, res) =>{
          OR (COALESCE(grappling_experience, '{}'::text[]) && $6::text[])
           )
         AND academy_belt = ANY($7::text[]);;`
-    const distMeters = req.query.data.distance * 1609.32;
-    let data = req.query.data;
+    const distMeters = req.query.data.distance * 1609.32; //Convert distance to meters
+    let data = req.query.data;  //Get data to search for partners
+    //Put data in array matching query paramters
     const values = [req.query.latitude, req.query.longitude, distMeters, data.trainingPref, data.intensityPref, data.grapplingExp, data.beltFilter]; //Get values from our request parameter
     const usersFoundResp = await db.query(text, values);    //Query our database
     let searchPartners = safe_Conversion(usersFoundResp.rows); //This calls our safe conversion to convert values to variables asked for in front end
@@ -150,7 +152,6 @@ app.get('/users/:username/home', async (req, res) => {
         return res.redirect("/login");
     }
     });
-
 
 app.get('/', async (req,res)=>{
     res.render("main_page.ejs",{
@@ -279,8 +280,9 @@ app.post('/user/update',upload.single('photo'), async (req, res) => {
 })
 
 passport.use(new Strategy( async function verify(username, password, cb){
-
-     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
+  //Middleware for passport strategy needs to query database for user verification. Should be changed to first time only. Check redis if user has logged in in the past hour or so
+  console.log("Ran user db verfication")
+      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt, grappling_experience, striking_experience, profile_picture,
                     friends, ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
@@ -321,10 +323,10 @@ passport.deserializeUser( (user,cb)=>{
 //Middle ware for socket io and setting the user data on redis database
 io.use(async (socket, next) => {
   //Error if username was not provided
+  const username = socket.handshake.auth.username; //get connection username
   if (!username) {
     return next(new Error("invalid username"));
   }
-  const username = socket.handshake.auth.username; //get connection username
   const friends = socket.handshake.query.friends.split(','); //friends of connection
   const redUserKey = 'users:' + username; //Create user redis query
   //Hashset the user witht the query key and the users data needed to find friends and data
@@ -383,12 +385,15 @@ io.on("connection", async (socket) => {
  connFriends.forEach((friend) => {
     io.in(`user:${friend}`).emit("user:friend-connected",socket.username);
  })
- //console.log(connFriends);
+//If this is not a recovery for the socket
  if(socket.recovered === false){
  socket.emit("user:connected-friends",connFriends);
  }
- //console.log(socket.id);
- socket.on("message", (data) => {
+//Message event
+ socket.on("chat message", async (data) => {
+  //Get connected friends to check if reciever is online
+    console.log("Ran chat message");
+    console.log(data);
     let connFriends = await getConnFriends(socket);
     connFriends = connFriends.map((socketFriend)=>{
         return socketFriend.username;
@@ -402,21 +407,24 @@ io.on("connection", async (socket) => {
     }
 
  });
+ //When a socket wants to disconnect event
     socket.on("disconnect", async (reason) => {
     // ...
+    //Make current user leave the username room. If there are no other sessions in the room then the room will automatically close
     await io.in(`user:${socket.request.user.user_name}`).socketsLeave(`user:${socket.request.user.user_name}`);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    const foundSocket = await io.in(`user:${socket.request.user.user_name}`).fetchSockets();
+    await new Promise((resolve) => setTimeout(resolve, 5000));  //Timeout for socker to session recovery
+    const foundSocket = await io.in(`user:${socket.request.user.user_name}`).fetchSockets();  //Check if the session recovered or other session are still online for the current user
     if(foundSocket.length == 0){
-        let friendsSockObj = await getConnFriends(socket);
+      //If now socket to usurname connection was found
+        let friendsSockObj = await getConnFriends(socket); //Get connected friends
+        //For each connected friend emmit that the current user is disconnecting
         friendsSockObj.forEach(friendObj => {
-        console.log(friendObj);
         socket.to(`user:${friendObj.username}`).emit("user:friend-disconnect",socket.username);
             });
         
         const username = socket.handshake.auth.username;//get connection username
-        const redUserKey = 'users:' + username;
-        await RedisClient.del([redUserKey]);
+        const redUserKey = 'users:' + username; //Creat username query to query redis hash to delete the disconnected user
+        await RedisClient.del([redUserKey]); //Delete the user from redis hash user to user data object
 }
     
   });
@@ -425,13 +433,16 @@ io.on("connection", async (socket) => {
 });
 
 async function getConnFriends(socket){
-    let connFriends = socket.friends;
-    //console.log(`This user disconnected: ${socket.username}`);
+  /*
+  This function gets connected friends by querying redis to check friends are online
+  socket has a friends attribute array which holds the users friends
+  If friends not found in redis used as a cache that means that the friend is not connected
+  */
+    let connFriends = socket.friends; //Get connected friends
+    //Query redis friends by using map 
     connFriends = await Promise.all(connFriends.map(async (friend) =>{
         const usersQuery = 'users:' + friend;
-        //console.log(JSON.stringify(usersQuery));
         let friendQuery = await  RedisClient.hGetAll(usersQuery);
-        //console.log(`This is friend query ${friendQuery.username}`);
         return friendQuery;
         }));
     connFriends = connFriends.filter((friend) => {
