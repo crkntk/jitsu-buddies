@@ -18,7 +18,11 @@
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
      <script src="/socket.io/socket.io.js"></script>
      <script id="socket-script" username="<%=userInfo.user_name %>" friends=<%=userInfo.friends %>  type="module" src='/socket/socket.js'></script>
-</head>
+      <script type="module">
+        import socket from '/socket/socket.js'
+        window.socket = socket;
+      </script>
+    </head>
 <!-- color pallet https://colorhunt.co/palette/171717444444da0037ededed colors: black 171717, grey 444444, red DA0037, light grey EDEDED -->
 <body>
      <div id="main-content" class="z-10 transition-all duration-900 ease-in-out">
@@ -94,7 +98,7 @@
       <h3>FRIENDS</h3>
       <div>
         <% friends.forEach( function(friend){ %>
-          <%- include('partials/friend.ejs',{friend: friend,connected: false, currChatObj: JSON.stringify(userInfo.chat)}); %>
+          <%- include('partials/friend.ejs',{ friend: friend,connected: false, currChatObj: JSON.stringify(userInfo.chat)}); %>
           <% }); %>
       </div>
      </div>
