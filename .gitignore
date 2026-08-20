@@ -141,3 +141,6 @@ certificates
 
 # Playwright
 /playwright/.auth/
+
+# Lint
+.lint/tmp/

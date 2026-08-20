@@ -59,6 +59,8 @@ const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 const cookieMaxAge = 1000 * 60*60;
 
+const MESSAGE_BATCH_SIZE = 100;
+const MESSAGE_BATCH_TIMEOUT = 25;
 //Our redis client object initialization
 const RedisClient = createClient();
 RedisClient.on('error', err => console.log('Redis Client Error', err)); //Check if theres an error on client creation
@@ -399,7 +401,23 @@ io.on("connection", async (socket) => {
         return socketFriend.username;
     });
     if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
-
+        const data = {
+            recipientid: data.recipient,
+            sender: socket.username,
+            message: data.message,
+            timestamp: data.timestamp
+        }
+        socket.to(`user:${data.recipient}`).emit("chat message",socket.username);
+        query = `INSERT INTO messages(recipientid, senderid, content, timestamp) VALUES($1,$2,$3,$4)`;
+        values = Object.values(data);
+        try{
+            const user = await db.query(query, values);
+        }
+        catch(err){
+             //If there is an error when we query the database we catch it and respond accordingly
+             //need to emit failed to send message
+            console.log(err);
+        }
     }
     else{
     //If friend is not connected send message to inbox or cache it to send later
