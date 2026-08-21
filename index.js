@@ -292,10 +292,13 @@ app.get('/user/conversation', async (req, res) => {
       res.send(redisResult[0].messages);
     }
     else{
+      const redUserKey = 'users:conversation:' + convID; //Create conversation quer
+      await RedisClient.hSet(redUserKey,'cachedConversations',JSON.stringify([convID]));
       //Hashset the user witht the query key and the users data needed to find friends and data
       const messages = db_get_conversation_messages(convID);
       respMessages = JSON.stringify(messages);
       await RedisClient.hSet(redConvKey,{
+        users: JSON.stringify([req.username,req.friend]),
         messages: respMessages
     });
     res.send(respMessages);
@@ -427,18 +430,18 @@ io.on("connection", async (socket) => {
     connFriends = connFriends.map((socketFriend)=>{
         return socketFriend.username;
     });
-    const data = {
+    data = {
             recipientid: data.recipient,
             sender: socket.username,
             message: data.message,
             timestamp: data.timestamp
         }
     if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
-        socket.to(`user:${data.recipient}`).emit("chat message",socket.username);
+        socket.to(`user:${data.recipient}`).emit("chat message",data.message);
         if(conversationID){
-            const redisQuery = 'conversation' + conversationID;
-            let redisResult = await  RedisClient.hGetAll(usersQuery);
-            if(Object.keys(redisResult).length == 0){
+            const redisQuery = 'conversation:' + conversationID;
+            let redisResult = await  RedisClient.hGetAll(redisQuery);
+            if(Object.keys(redisResult).length != 0){
                 dbQuery = `INSERT INTO message(senderid, recipientid,content,timestamp,conversationid) VALUES($1,$2,$3,$4,$5)`;
                 const values = Object.values(data);
                 values.push(conversationID);
@@ -450,6 +453,9 @@ io.on("connection", async (socket) => {
                   console.log(error);
                     return;
                 }
+            }
+            else{
+              return;
             }
         }
         else{
@@ -527,7 +533,7 @@ async function db_create_conversation(data){
   catch(error){
     console.log(error)
   }
-  const convID;
+  const convID = '';
   if(messageResult.rows.length == 0){
     dbQuery = `INSERT INTO conversation RETURNING conversationid`;
     try{
