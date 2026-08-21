@@ -277,9 +277,36 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     }
 
 });
-app.post('/user/update',upload.single('photo'), async (req, res) => {
 
+app.get('/user/conversation', async (req, res) => {
+
+  if(await req.isAuthenticated()){
+    const data = {
+      sender: req.username,
+      recipient: req.friend
+    }
+    const convID = await db_create_conversation(data);
+    const redConvKey = 'users:conversation:' + convID; //Create conversation query
+    let redisResult = await  RedisClient.hGetAll(redConvKey);
+    if(Object.keys(redisResult).length !== 0){
+      res.send(redisResult[0].messages);
+    }
+    else{
+      //Hashset the user witht the query key and the users data needed to find friends and data
+      const messages = db_get_conversation_messages(convID);
+      respMessages = JSON.stringify(messages);
+      await RedisClient.hSet(redConvKey,{
+        messages: respMessages
+    });
+    res.send(respMessages);
+  }
+  }
+  else{
+    //If our password hashes dont match we redirect to the sign in page
+      return res.redirect("/login");
+  }
 })
+
 
 passport.use(new Strategy( async function verify(username, password, cb){
   //Middleware for passport strategy needs to query database for user verification. Should be changed to first time only. Check redis if user has logged in in the past hour or so
@@ -400,58 +427,41 @@ io.on("connection", async (socket) => {
     connFriends = connFriends.map((socketFriend)=>{
         return socketFriend.username;
     });
-    if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
-        const data = {
+    const data = {
             recipientid: data.recipient,
             sender: socket.username,
             message: data.message,
             timestamp: data.timestamp
         }
+    if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
         socket.to(`user:${data.recipient}`).emit("chat message",socket.username);
         if(conversationID){
             const redisQuery = 'conversation' + conversationID;
             let redisResult = await  RedisClient.hGetAll(usersQuery);
             if(Object.keys(redisResult).length == 0){
-                dbQuery = `INSERT INTO conversation() VALUES($1,$2,$3,$4)`;
+                dbQuery = `INSERT INTO message(senderid, recipientid,content,timestamp,conversationid) VALUES($1,$2,$3,$4,$5)`;
+                const values = Object.values(data);
+                values.push(conversationID);
+                try{
+                  const messageResult = db.query(dbQuery,values);
+                  return;
+                }
+                catch(error){
+                  console.log(error);
+                    return;
+                }
             }
         }
-       const messageQuery = `SELECT 1 FROM messages WHERE (senderid = ($1) AND recipientid = ($2) OR (senderid =  $2 AND recipientid = $1) VALUES ($1,$2) LIMIT 1 RETURNING conversationid`;
-        const values = [socket.username, data.recipient]
-        try{
-          const messageResult = await db.query(messageQuery, values);
-        }
-        catch(error){
-          console.log(error)
-        }
-        if(messageResult.rows.length == 0){
-          dbQuery = `INSERT INTO conversation() VALUES($1,$2,$3,$4)`;
-        }
-        query = `INSERT INTO messages(recipientid, senderid, content, timestamp) VALUES($1,$2,$3,$4)`;
-        values = Object.values(data);
-        try{
-            const user = await db.query(query, values);
-        }
-        catch(err){
-             //If there is an error when we query the database we catch it and respond accordingly
-             //need to emit failed to send message
-            console.log(err);
-        }
+        else{
+       convID = db_insert_messsage(data);
+       //add message to cached conversation
     }
+  }
     else{
     //If friend is not connected send message to inbox or cache it to send later
-      query = `INSERT INTO messages(recipientid, senderid, content, timestamp) VALUES($1,$2,$3,$4)`;
-      values = Object.values(data);
-      try{
-            const user = await db.query(query, values);
-        }
-        catch(err){
-             //If there is an error when we query the database we catch it and respond accordingly
-             //need to emit failed to send message
-            console.log(err);
-        }
-    }
+     convID = db_insert_messsage(data);
 
- });
+ }});
  //When a socket wants to disconnect event
     socket.on("disconnect", async (reason) => {
     // ...
@@ -494,6 +504,59 @@ async function getConnFriends(socket){
         return Object.keys(friend).length !== 0;
         });
     return connFriends;
+}
+
+async function db_get_conversation_messages(conversationID){
+  const messagesQuery = `SELECT * FROM messages WHERE conversationid = ($1) VALUES ($1)`;
+  try{
+    const messagesResult = await db.query(conversationID);
+    return messagesResult.rows;
+  }
+  catch(error){
+    console.log(error);
+  }
+
+}
+
+async function db_create_conversation(data){
+  const messageQuery = `SELECT 1 FROM messages WHERE (senderid = ($1) AND recipientid = ($2) OR (senderid =  $2 AND recipientid = $1) VALUES ($1,$2) LIMIT 1 RETURNING conversationid`;
+  const values = [data.sender, data.recipient]
+  try{
+    const messageResult = await db.query(messageQuery, values);
+  }
+  catch(error){
+    console.log(error)
+  }
+  const convID;
+  if(messageResult.rows.length == 0){
+    dbQuery = `INSERT INTO conversation RETURNING conversationid`;
+    try{
+        const convResult = await db.query(dbQuery);
+    }
+    catch (error){
+      console.log(error);
+    }
+    convID = convResult.rows[0];
+  }
+  else{
+    convID = messageResult.rows[0]
+  }
+  return convID
+}
+async function db_insert_messsage(data){
+  const convID = db_insert_conversation(data);
+  query = `INSERT INTO messages(recipientid, senderid, content, timestamp, conversationid) VALUES($1,$2,$3,$4)`;
+  values = Object.values(data);
+  values.push(convID);
+  try{
+      const user = await db.query(query, values);
+  }
+  catch(err){
+      //If there is an error when we query the database we catch it and respond accordingly
+      //need to emit failed to send message
+      console.log(err);
+  }
+  return convID;
 }
 
 httpServer.listen(3000);
