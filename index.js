@@ -408,6 +408,24 @@ io.on("connection", async (socket) => {
             timestamp: data.timestamp
         }
         socket.to(`user:${data.recipient}`).emit("chat message",socket.username);
+        if(conversationID){
+            const redisQuery = 'conversation' + conversationID;
+            let redisResult = await  RedisClient.hGetAll(usersQuery);
+            if(Object.keys(redisResult).length == 0){
+                dbQuery = `INSERT INTO conversation() VALUES($1,$2,$3,$4)`;
+            }
+        }
+       const messageQuery = `SELECT 1 FROM messages WHERE (senderid = ($1) AND recipientid = ($2) OR (senderid =  $2 AND recipientid = $1) VALUES ($1,$2) LIMIT 1 RETURNING conversationid`;
+        const values = [socket.username, data.recipient]
+        try{
+          const messageResult = await db.query(messageQuery, values);
+        }
+        catch(error){
+          console.log(error)
+        }
+        if(messageResult.rows.length == 0){
+          dbQuery = `INSERT INTO conversation() VALUES($1,$2,$3,$4)`;
+        }
         query = `INSERT INTO messages(recipientid, senderid, content, timestamp) VALUES($1,$2,$3,$4)`;
         values = Object.values(data);
         try{
