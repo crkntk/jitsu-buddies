@@ -421,7 +421,16 @@ io.on("connection", async (socket) => {
     }
     else{
     //If friend is not connected send message to inbox or cache it to send later
-
+      query = `INSERT INTO messages(recipientid, senderid, content, timestamp) VALUES($1,$2,$3,$4)`;
+      values = Object.values(data);
+      try{
+            const user = await db.query(query, values);
+        }
+        catch(err){
+             //If there is an error when we query the database we catch it and respond accordingly
+             //need to emit failed to send message
+            console.log(err);
+        }
     }
 
  });
