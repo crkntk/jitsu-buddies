@@ -426,6 +426,7 @@ io.on("connection", async (socket) => {
   //Get connected friends to check if reciever is online
     console.log("Ran chat message");
     console.log(data);
+    let convID = '';
     let connFriends = await getConnFriends(socket);
     connFriends = connFriends.map((socketFriend)=>{
         return socketFriend.username;
@@ -525,44 +526,48 @@ async function db_get_conversation_messages(conversationID){
 }
 
 async function db_create_conversation(data){
-  const messageQuery = `SELECT 1 FROM messages WHERE (senderid = ($1) AND recipientid = ($2) OR (senderid =  $2 AND recipientid = $1) VALUES ($1,$2) LIMIT 1 RETURNING conversationid`;
-  const values = [data.sender, data.recipient]
+  const messageQuery = `SELECT conversationid FROM message WHERE (senderid = ($1) AND recipientid = ($2)) OR (senderid =  ($2) AND recipientid = ($1)) LIMIT 1;`;
+  const values = [data.sender, data.recipient];
   try{
     const messageResult = await db.query(messageQuery, values);
+    console.log(messageResult);
+    let convID = '';
+    if(messageResult.rows.length == 0){
+      const dbQuery = `INSERT INTO conversation(subject) VALUES($1) RETURNING conversationid`;
+      try{
+          const convResult = await db.query(dbQuery,[""]);
+          convID = convResult.rows[0].conversationid;
+          console.log(`This is conversation ID: ${convID}`);
+      }
+      catch (error){
+        console.log(error);
+      }
+    }
+    else{
+      convID = messageResult.rows[0]
+    }
+    return convID;
   }
   catch(error){
     console.log(error)
   }
-  const convID = '';
-  if(messageResult.rows.length == 0){
-    dbQuery = `INSERT INTO conversation RETURNING conversationid`;
-    try{
-        const convResult = await db.query(dbQuery);
-    }
-    catch (error){
-      console.log(error);
-    }
-    convID = convResult.rows[0];
-  }
-  else{
-    convID = messageResult.rows[0]
-  }
-  return convID
 }
 async function db_insert_messsage(data){
-  const convID = db_insert_conversation(data);
-  query = `INSERT INTO messages(recipientid, senderid, content, timestamp, conversationid) VALUES($1,$2,$3,$4)`;
-  values = Object.values(data);
+  const convID = await db_create_conversation(data);
+  console.log(convID);
+  data.timestamp = new Date(data.timestamp * 1000);
+  const query = `INSERT INTO message(recipientid, senderid, content, timestamp, conversationid) VALUES($1,$2,$3,$4,$5)`;
+  let values = Object.values(data);
   values.push(convID);
   try{
       const user = await db.query(query, values);
+      return convID;
   }
   catch(err){
       //If there is an error when we query the database we catch it and respond accordingly
       //need to emit failed to send message
       console.log(err);
   }
-  return convID;
 }
 
 httpServer.listen(3000);
