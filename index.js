@@ -53,7 +53,7 @@ const io = new Server(httpServer, {
         // whether to skip middlewares upon successful recovery
         skipMiddlewares: true,
   }}); //
-const port = 3000; //We run on port
+const port = process.env.PORT || 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
