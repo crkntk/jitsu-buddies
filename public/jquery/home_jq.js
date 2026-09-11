@@ -152,7 +152,7 @@ async function zoomToUsers(){
 
 function putIconsMap(user) {
   const lat = Number(user.lat);
-  const lng = Number(user.lon); // or user.lng depending on your API
+  const lng = Number(user.lon); // 
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     console.warn("Skipping user with invalid coords:", user);
@@ -190,6 +190,17 @@ function createPopupHTML(user) {
     //for (var i = 0; i <user.preferences.meetPrefrences.length; i++){
         //meetPrefrences = meetPrefrences + ", " + user.preferences.meetPrefrences[i];
     //}
-    return `<h2> Username: ${user.username} </h2><p> Academy: ${user.academy}</p> <p> Belt: ${user.academy_belt}</p> <p>Weight: ${user.weight}</p> <p>Grappling Styles: ${grapplingStyles}</p> <p>Striking Styles: ${strikingStyles}</p> <p>Meeting Prefrences: ${meetPrefrences}</p> <button class='popUp-meet'>Set Meet</button> `;
+    let iconComp = `<h2> Username: ${user.username} </h2>
+    <p> Academy: ${user.academy}</p> 
+    <p> Belt: ${user.academy_belt}</p> 
+    <p>Weight: ${user.weight}</p> 
+    <p>Grappling Styles: ${grapplingStyles}</p> 
+    <p>Striking Styles: ${strikingStyles}</p> 
+    <p>Meeting Prefrences: ${meetPrefrences}</p> 
+    <button class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded'>Request Meet</button>
+    <button class='bg-green-500'>Friend Request</button>
+    `
+    ;
+    return iconComp;
 
 }

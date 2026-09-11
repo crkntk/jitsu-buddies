@@ -15,6 +15,10 @@ import sharp from "sharp";
 import path from "path"
 import passport from "passport"
 import { Strategy } from 'passport-local'
+import { createServer } from "http"; //Http server for socket io usage so it wont create a new server and socket io is attached
+import { Server } from "socket.io"; //Http seerver for socket io
+import { createClient } from 'redis'; //Import Redis client object
+
 const saltRounds = 15 //Salt rounds for hashing password
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); //Added object for storage to upload profile picture to database
 // Load environment variables from.env file
@@ -34,28 +38,54 @@ const db = new pg.Client({
     ca: fs.readFileSync("./certificates/db/ca.pem").toString(),
   }
 });
-const USERLIMIT = 10; //This is to limit the amount of users
+const USERLIMIT = 20; //This is to limit the amount of users
 await db.connect(); //connect to database
+console.log("server connected to db.")
 const key = process.env.PMAP_KEY ; //Key for leaflet map in order to use service maptiler API
 const LokIQ =  process.env.LOCATIONIQ_TOKEN; ///Key for location service to get Ip addresses based and address given LOCATIONIQ API
 const app = express(); //Start express app instance
+const httpServer = createServer(app); // initialize http server
+
+const io = new Server(httpServer, {
+    connectionStateRecovery: {
+        // the backup duration of the sessions and the packets
+        maxDisconnectionDuration: 2 * 60 * 1000,
+        // whether to skip middlewares upon successful recovery
+        skipMiddlewares: true,
+  }}); //
 const port = process.env.PORT || 3000; //We run on port
 //These are services to find lattitude and longitude based on ip address and normal addresses
 const ipifyUrl = "https://api.ipify.org?format=json";
 const ipapiUrl = "https://ipapi.co/";
 const cookieMaxAge = 1000 * 60*60;
+
+const MESSAGE_BATCH_SIZE = 100;
+const MESSAGE_BATCH_TIMEOUT = 25;
+//Our redis client object initialization
+const RedisClient = createClient();
+RedisClient.on('error', err => console.log('Redis Client Error', err)); //Check if theres an error on client creation
+//Start redis connection
+async function redis_start(){
+    await RedisClient.connect(); //connect to redis client on port 6379 locally. Use docker on windows
+};
+redis_start();
+
+
+
 //Our middle ware for cookies and encoding
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-app.use(session({
+//Start middle ware session for session persistence
+const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || 'your_super_secret_key', // Use an environment variable in production
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge:cookieMaxAge
+    maxAge: cookieMaxAge //Cookie saving time
   }
-}));
+});
+//Use session middleware
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -86,8 +116,9 @@ app.get('/searchPartners', async (req, res) =>{
          OR (COALESCE(grappling_experience, '{}'::text[]) && $6::text[])
           )
         AND academy_belt = ANY($7::text[]);;`
-    const distMeters = req.query.data.distance * 1609.32;
-    let data = req.query.data;
+    const distMeters = req.query.data.distance * 1609.32; //Convert distance to meters
+    let data = req.query.data;  //Get data to search for partners
+    //Put data in array matching query paramters
     const values = [req.query.latitude, req.query.longitude, distMeters, data.trainingPref, data.intensityPref, data.grapplingExp, data.beltFilter]; //Get values from our request parameter
     const usersFoundResp = await db.query(text, values);    //Query our database
     let searchPartners = safe_Conversion(usersFoundResp.rows); //This calls our safe conversion to convert values to variables asked for in front end
@@ -103,6 +134,7 @@ app.get('/users/:username/home', async (req, res) => {
    */
     //We construct a query to get the current user information from our database and their location for the map
     let user = req.user;
+    //console.log(user);
     if(await req.isAuthenticated()){
     //render webpage with the papimap key and the location data if the hash passwords match
     //Render our hompage with information retrieved from our database and a san tzue quote
@@ -111,9 +143,10 @@ app.get('/users/:username/home', async (req, res) => {
         lat: user.latitude,
         lon: user.longitude,
         userInfo: user,
+        friends: user.friends,
         academyBelt: user.academy_belt,
         sunTzuQuote: get_sanTzuQuote(),
-        loggedIn: true
+        loggedIn: true //need to delete this dont need it in the front end. ITS USLESS!!!!
         });
     }
     else{
@@ -121,7 +154,6 @@ app.get('/users/:username/home', async (req, res) => {
         return res.redirect("/login");
     }
     });
-
 
 app.get('/', async (req,res)=>{
     res.render("main_page.ejs",{
@@ -245,15 +277,46 @@ app.post('/createUser',upload.single('photo'), async (req, res) => {
     }
 
 });
-app.post('/user/update',upload.single('photo'), async (req, res) => {
 
+app.get('/user/conversation', async (req, res) => {
+
+  if(await req.isAuthenticated()){
+    const data = {
+      sender: req.username,
+      recipient: req.friend
+    }
+    const convID = await db_create_conversation(data);
+    const redConvKey = 'users:conversation:' + convID; //Create conversation query
+    let redisResult = await  RedisClient.hGetAll(redConvKey);
+    if(Object.keys(redisResult).length !== 0){
+      res.send(redisResult[0].messages);
+    }
+    else{
+      const redUserKey = 'users:conversation:' + convID; //Create conversation quer
+      await RedisClient.hSet(redUserKey,'cachedConversations',JSON.stringify([convID]));
+      //Hashset the user witht the query key and the users data needed to find friends and data
+      const messages = db_get_conversation_messages(convID);
+      respMessages = JSON.stringify(messages);
+      await RedisClient.hSet(redConvKey,{
+        users: JSON.stringify([req.username,req.friend]),
+        messages: respMessages
+    });
+    res.send(respMessages);
+  }
+  }
+  else{
+    //If our password hashes dont match we redirect to the sign in page
+      return res.redirect("/login");
+  }
 })
 
-passport.use(new Strategy( async function verify(username, password, cb){
 
-     const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
+passport.use(new Strategy( async function verify(username, password, cb){
+  //Middleware for passport strategy needs to query database for user verification. Should be changed to first time only. Check redis if user has logged in in the past hour or so
+  console.log("Ran user db verfication")
+      const text = `SELECT first_name, last_name, user_name, academy_name, weight, bio, pswd_hash,
                     training_preferences, intensity_preferences, academy_belt, grappling_experience, striking_experience, profile_picture,
-                    ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
+                    friends, ST_X(location::geometry) AS Longitude, ST_Y(location::geometry) AS latitude
                     FROM users WHERE user_name = $1`
     const values = [username] //Add the username param to our query for safe quering
     const selectedUser = await db.query(text, values); //query database safely with values and query text
@@ -267,11 +330,12 @@ passport.use(new Strategy( async function verify(username, password, cb){
     const dbHash = selectedUser.rows[0].pswd_hash; //Get the hash that was queried from our database
     const match = await bcrypt.compare(providedPswd, dbHash); //We compare the hashes using bycrypt funciton. Given our salt parameters set correctly
     if(match){
-    //render webpage with the papimap key and the location data if the hash passwords match
-    delete selectedUser.rows[0].pswd_hash;
-    const user = selectedUser.rows[0]; //Get the information from our database query
-    //Render our hompage with information retrieved from our database and a san tzue quote
-    return cb(null, user);
+        //render webpage with the papimap key and the location data if the hash passwords match
+        delete selectedUser.rows[0].pswd_hash;
+        const user = selectedUser.rows[0]; //Get the information from our database query
+        //Render our hompage with information retrieved from our database and a san tzue quote
+        user["chat"] = [];
+        return cb(null, user);
     }
     else{
         //If our password hashes dont match we redirect to the sign in page
@@ -280,6 +344,7 @@ passport.use(new Strategy( async function verify(username, password, cb){
 
 }));
 
+//Serialize user for session using passport and deserialization functions
 passport.serializeUser( (user,cb)=>{
     cb(null, user);
 });
@@ -287,12 +352,225 @@ passport.serializeUser( (user,cb)=>{
 passport.deserializeUser( (user,cb)=>{
     cb(null, user);
 });
-
-
-
-app.listen(port,'0.0.0.0', function() {
-    console.log(`Server is running on port ${port}`);
+//Middle ware for socket io and setting the user data on redis database
+io.use(async (socket, next) => {
+  //Error if username was not provided
+  const username = socket.handshake.auth.username; //get connection username
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
+  const friends = socket.handshake.query.friends.split(','); //friends of connection
+  const redUserKey = 'users:' + username; //Create user redis query
+  //Hashset the user witht the query key and the users data needed to find friends and data
+  await RedisClient.hSet(redUserKey,{
+    socketId: socket.id,
+    username: username,
+    friends: JSON.stringify(friends)
 });
+
+  socket.username = username; //Attach username to current socket
+  socket.friends = friends;   //Attach friends to socket for fast retrieval
+  next();
+});
+//Check that middleware is only used for hanshake
+function onlyForHandshake(middleware) {
+  return (req, res, next) => {
+    const isHandshake = req._query.sid === undefined;
+    if (isHandshake) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
+}
+
+io.engine.use(onlyForHandshake(sessionMiddleware)); //Override engine behavior on initial hanshake with function
+io.engine.use(onlyForHandshake(passport.session())); //Use passport session to use and attach the session to the socket
+//Call back for only for hanshake call
+io.engine.use(
+  onlyForHandshake((req, res, next) => {
+    if (req.user) {
+      next();
+    } else {
+      res.writeHead(401);
+      res.end();
+    }
+  }),
+);
+
+io.on("connection", async (socket) => {
+  //On connection event for socket
+  if(socket.recovered){
+    //Check if we are in recovery mode for the session
+    console.log("state recovered: ");
+    console.log(socket.id);
+  }
+  //Create room attached with user and username data to identify socket to username relationship
+  //If this is a new session this will create a new room if a session already is duplicate then the session will join the room
+  socket.join(`user:${socket.request.user.user_name}`);
+  let connFriends = await getConnFriends(socket);   //Get currently connected friends using the current socket attached with user information
+  //We only need the connected friend's username
+ connFriends = connFriends.map((socketFriend)=>{
+    return socketFriend.username;
+ });
+ //For each of our connnected friends we emmit that we are connected
+ connFriends.forEach((friend) => {
+    io.in(`user:${friend}`).emit("user:friend-connected",socket.username);
+ })
+//If this is not a recovery for the socket
+ if(socket.recovered === false){
+ socket.emit("user:connected-friends",connFriends);
+ }
+//Message event
+ socket.on("chat message", async (data) => {
+  //Get connected friends to check if reciever is online
+    console.log("Ran chat message");
+    console.log(data);
+    let convID = '';
+    let connFriends = await getConnFriends(socket);
+    connFriends = connFriends.map((socketFriend)=>{
+        return socketFriend.username;
+    });
+    data = {
+            recipientid: data.recipient,
+            sender: socket.username,
+            message: data.message,
+            timestamp: data.timestamp
+        }
+    if(data.recipient in connFriends){ //Check if friend is connected to send the message directly using sockets
+        socket.to(`user:${data.recipient}`).emit("chat message",data.message);
+        if(conversationID){
+            const redisQuery = 'conversation:' + conversationID;
+            let redisResult = await  RedisClient.hGetAll(redisQuery);
+            if(Object.keys(redisResult).length != 0){
+                dbQuery = `INSERT INTO message(senderid, recipientid,content,timestamp,conversationid) VALUES($1,$2,$3,$4,$5)`;
+                const values = Object.values(data);
+                values.push(conversationID);
+                try{
+                  const messageResult = db.query(dbQuery,values);
+                  return;
+                }
+                catch(error){
+                  console.log(error);
+                    return;
+                }
+            }
+            else{
+              return;
+            }
+        }
+        else{
+       convID = db_insert_messsage(data);
+       //add message to cached conversation
+    }
+  }
+    else{
+    //If friend is not connected send message to inbox or cache it to send later
+     convID = db_insert_messsage(data);
+
+ }});
+ //When a socket wants to disconnect event
+    socket.on("disconnect", async (reason) => {
+    // ...
+    //Make current user leave the username room. If there are no other sessions in the room then the room will automatically close
+    await io.in(`user:${socket.request.user.user_name}`).socketsLeave(`user:${socket.request.user.user_name}`);
+    await new Promise((resolve) => setTimeout(resolve, 5000));  //Timeout for socker to session recovery
+    const foundSocket = await io.in(`user:${socket.request.user.user_name}`).fetchSockets();  //Check if the session recovered or other session are still online for the current user
+    if(foundSocket.length == 0){
+      //If now socket to usurname connection was found
+        let friendsSockObj = await getConnFriends(socket); //Get connected friends
+        //For each connected friend emmit that the current user is disconnecting
+        friendsSockObj.forEach(friendObj => {
+        socket.to(`user:${friendObj.username}`).emit("user:friend-disconnect",socket.username);
+            });
+        
+        const username = socket.handshake.auth.username;//get connection username
+        const redUserKey = 'users:' + username; //Creat username query to query redis hash to delete the disconnected user
+        await RedisClient.del([redUserKey]); //Delete the user from redis hash user to user data object
+}
+    
+  });
+
+  
+});
+
+async function getConnFriends(socket){
+  /*
+  This function gets connected friends by querying redis to check friends are online
+  socket has a friends attribute array which holds the users friends
+  If friends not found in redis used as a cache that means that the friend is not connected
+  */
+    let connFriends = socket.friends; //Get connected friends
+    //Query redis friends by using map 
+    connFriends = await Promise.all(connFriends.map(async (friend) =>{
+        const usersQuery = 'users:' + friend;
+        let friendQuery = await  RedisClient.hGetAll(usersQuery);
+        return friendQuery;
+        }));
+    connFriends = connFriends.filter((friend) => {
+        return Object.keys(friend).length !== 0;
+        });
+    return connFriends;
+}
+
+async function db_get_conversation_messages(conversationID){
+  const messagesQuery = `SELECT * FROM messages WHERE conversationid = ($1) VALUES ($1)`;
+  try{
+    const messagesResult = await db.query(conversationID);
+    return messagesResult.rows;
+  }
+  catch(error){
+    console.log(error);
+  }
+
+}
+
+async function db_create_conversation(data){
+  const messageQuery = `SELECT conversationid FROM message WHERE (senderid = ($1) AND recipientid = ($2)) OR (senderid =  ($2) AND recipientid = ($1)) LIMIT 1;`;
+  const values = [data.sender, data.recipient];
+  try{
+    const messageResult = await db.query(messageQuery, values);
+    console.log(messageResult);
+    let convID = '';
+    if(messageResult.rows.length == 0){
+      const dbQuery = `INSERT INTO conversation(subject) VALUES($1) RETURNING conversationid`;
+      try{
+          const convResult = await db.query(dbQuery,[""]);
+          convID = convResult.rows[0].conversationid;
+          console.log(`This is conversation ID: ${convID}`);
+      }
+      catch (error){
+        console.log(error);
+      }
+    }
+    else{
+      convID = messageResult.rows[0]
+    }
+    return convID;
+  }
+  catch(error){
+    console.log(error)
+  }
+}
+async function db_insert_messsage(data){
+  const convID = await db_create_conversation(data);
+  console.log(convID);
+  data.timestamp = new Date(data.timestamp * 1000);
+  const query = `INSERT INTO message(recipientid, senderid, content, timestamp, conversationid) VALUES($1,$2,$3,$4,$5)`;
+  let values = Object.values(data);
+  values.push(convID);
+  try{
+      const user = await db.query(query, values);
+      return convID;
+  }
+  catch(err){
+      //If there is an error when we query the database we catch it and respond accordingly
+      //need to emit failed to send message
+      console.log(err);
+  }
+}
+
+httpServer.listen(3000);
 
 function safe_Conversion(usersArray){
     // TODO: implement safe conversion function for latitude and longitude

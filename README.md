@@ -50,6 +50,6 @@ npx kill-port 3000
 docker compose build --no-cache
 docker compose up --force-recreate
 
-
+docker push creyes37/jitsu-buddies:latest 
 
 docker push creyes37/jitsu-buddies:latest

@@ -2,7 +2,7 @@ import {chromium} from 'playwright';
 import { test, expect } from '@playwright/test';
 
 let User1 = {
-     address: '23 E Correll Rd',
+    address: '23 E Correll Rd',
     city: 'Heber',
     state: 'CA',
     zip: '92249',
